@@ -79,14 +79,55 @@ double calc_planck(double f)
 }
 
 // -----------------  MINE  -------------------------------------------
+double *array;
+int    max_array;
 
 double calc_mine(double f)
 {
-    return 0; // xxx
+    #define MAX 500000
+
+    // xxx cleanup
+    double mode_density, energy_density;
+    double sum_energy_quantized, avg_energy_quantized;
+    double hf = 1.22 * h * f;
+
+    mode_density = (8 * M_PI * (f*f)) / (C*C*C);
+
+    sum_energy_quantized = 0;
+    for (int i = 0; i < MAX; i++) {
+        double p = (double)random() / ((double)RAND_MAX + 1);
+        double velocity = binary_search(p, array, max_array);
+        double energy = .5 * MASS * (velocity * velocity);
+        sum_energy_quantized += floor(energy / hf) * hf;
+    }
+    avg_energy_quantized = sum_energy_quantized / MAX;
+
+    energy_density = mode_density * avg_energy_quantized;
+    energy_density *= .66666;
+
+    return energy_density;
 }
+
 
 void calc_mine_init(void)
 {
+    double max_velocity = sqrt(2 * (50*KT) / MASS);
+    double sum_p = 0, velocity, p;
+
+    array = calloc(max_velocity+10, sizeof(double));
+
+    array[max_array++] = 0;
+    for (velocity = 0; velocity < max_velocity; velocity++) {
+        p = maxwell_boltzmann_probability(velocity);
+        sum_p += p;
+        array[max_array++] = sum_p;
+    }
+    array[max_array++] = 1;
+
+    printf("calc_mine_init:\n");
+    printf("  sum_p        = %f\n", sum_p);
+    printf("  max array    = %d\n", max_array);
+    printf("  max velocity = %f\n", max_velocity);
 }
 
 double maxwell_boltzmann_probability(double velocity)
@@ -182,16 +223,7 @@ int test(void)
     }
 #endif
 
-    // 1000 - 0.349904
-    // 1001 - 0.350643
-    int idx;
 #if 0
-    idx = binary_search(0.349904+.00001, array, max_array);
-    printf("idx %d\n", idx);
-    idx = binary_search(0.350643-.00001, array, max_array);
-    printf("idx %d\n", idx);
-#endif
-
     static int histogram[1000000];
 
     printf("starting\n");
@@ -221,6 +253,7 @@ int test(void)
               -e \"set yrange [*:*]\" \
               -e \"plot 'test1.dat' using 1:2 with lines linewidth 2\" \
                     ");
+#endif
 #endif
 
     return 0;
