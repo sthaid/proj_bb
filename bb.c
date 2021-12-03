@@ -1,15 +1,15 @@
 // xxx label plot axis and title,  and temperature in plot
 #include "common.h"
 
-#define   T    6000.
 #define   K    1.380649E-23
 #define   C    299792458.
 #define   h    6.62607004e-34
 
-//#define MASS (4.002603 * 1.6603145E-27)  // 4He mass in kg xxx eliminate use of mass  or test with differnet mass
-#define MASS (1000 * 1.6603145E-27)  // 4He mass in kg xxx eliminate use of mass  or test with differnet mass
+#define MASS (4.002603 * 1.6603145E-27)  // 4He mass in kg xxx eliminate use of mass  or test with differnet mass
+//#define MASS (1000 * 1.6603145E-27)  // 4He mass in kg xxx eliminate use of mass  or test with differnet mass
 
-#define KT  (K*T)  // xxx arg
+double T = 6000;
+double KT;
 
 double calc_rj(double f);
 double calc_planck(double f);
@@ -23,18 +23,30 @@ double maxwell_boltzmann_probability(double velocity);
 
 int main(int argc, char **argv)
 {
-    int max, i;
+    int max, i, cnt;
     double logf, ymax;
     double log_freq[1000], rj[1000], planck[1000], mine[1000];
     char yrange[100];
     FILE *fp;
 
+    // get temperature from argv[1]
+    if (argc > 1) {
+        cnt = sscanf(argv[1], "%lf", &T);
+        if (cnt != 1 || T < 1 || T > 10000) {
+            printf("ERROR: T must be in range 1 to 10000 degrees K\n");
+            exit(1);
+        }
+    }
+    printf("T = %0.0f degrees K\n", T);
+    KT = K * T;
+
+    // xxx
     calc_mine_init();
 
     // calculate the energy density vs frequency using:
     // - Rayleigh–Jeans law
     // - Planck's Law
-    for (max = 0, logf = 12; logf <= 16; logf += .10) {  // xxx .1 vs .01
+    for (max = 0, logf = 10; logf <= 16; logf += .10) {  // xxx .1 vs .01
         double f = pow(10, logf);
 
         log_freq[max] = logf;
