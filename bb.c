@@ -1,3 +1,4 @@
+// xxx label plot axis and title,  and temperature in plot
 #include "common.h"
 
 #define   T    6000.
@@ -5,7 +6,8 @@
 #define   C    299792458.
 #define   h    6.62607004e-34
 
-#define MASS (4.002603 * 1.6603145E-27)  // 4He mass in kg xxx eliminate
+//#define MASS (4.002603 * 1.6603145E-27)  // 4He mass in kg xxx eliminate use of mass  or test with differnet mass
+#define MASS (1000 * 1.6603145E-27)  // 4He mass in kg xxx eliminate use of mass  or test with differnet mass
 
 #define KT  (K*T)  // xxx arg
 
@@ -13,15 +15,18 @@ double calc_rj(double f);
 double calc_planck(double f);
 double calc_mine(double f);
 void calc_mine_init(void);
+void test(void); //xxx name
 double maxwell_boltzmann_probability(double velocity);
 
 // -----------------  MAIN  ----------------------------------------------------
+// xxx enter temperature on cmdline
 
 int main(int argc, char **argv)
 {
     int max, i;
-    double logf;
+    double logf, ymax;
     double log_freq[1000], rj[1000], planck[1000], mine[1000];
+    char yrange[100];
     FILE *fp;
 
     calc_mine_init();
@@ -49,8 +54,17 @@ int main(int argc, char **argv)
     }
     fclose(fp);
 
+    // find largest value in planck[] or mine[] array, which will be used for gnuplot yrange
+    ymax = 0;
+    for (i = 0; i < max; i++) {
+        if (mine[i] > ymax) ymax = mine[i];
+        if (planck[i] > ymax) ymax = planck[i];
+    }
+
     // run gnuplot
-    gnuplot("plot.dat", "[*:*]", "[0:5e-15]", 3, 
+    sprintf(yrange, "[0:%e]", 1.5*ymax);
+    printf("yrange '%s'\n", yrange);
+    gnuplot("plot.dat", "[*:*]", yrange, 3, 
             "1:2", "red",
             "1:3", "purple",
             "1:4", "blue");
@@ -79,7 +93,8 @@ double calc_planck(double f)
 }
 
 // -----------------  MINE  -------------------------------------------
-double *array;
+
+double *array;  // xxx names
 int    max_array;
 
 double calc_mine(double f)
@@ -95,7 +110,7 @@ double calc_mine(double f)
 
     sum_energy_quantized = 0;
     for (int i = 0; i < MAX; i++) {
-        double p = (double)random() / ((double)RAND_MAX + 1);
+        double p = (double)random() / ((double)RAND_MAX + 1);  // xxx routine to get velocity
         double velocity = binary_search(p, array, max_array);
         double energy = .5 * MASS * (velocity * velocity);
         sum_energy_quantized += floor(energy / hf) * hf;
@@ -114,6 +129,7 @@ void calc_mine_init(void)
     double max_velocity = sqrt(2 * (50*KT) / MASS);
     double sum_p = 0, velocity, p;
 
+    // xxx determine max-array here
     array = calloc(max_velocity+10, sizeof(double));
 
     array[max_array++] = 0;
@@ -128,6 +144,44 @@ void calc_mine_init(void)
     printf("  sum_p        = %f\n", sum_p);
     printf("  max array    = %d\n", max_array);
     printf("  max velocity = %f\n", max_velocity);
+
+    // xxxx assert 
+
+    test();
+}
+
+void test(void)
+{
+    int *histogram = calloc(max_array, sizeof(int));
+    int i, velocity, max_plot_velocity;
+    double p;
+    FILE *fp;
+
+    printf("test starting\n");
+
+    for (i = 0; i < 10000000; i++) {
+        // xxx make a routine from this
+        p = (double)random() / ((double)RAND_MAX + 1);
+        velocity = binary_search(p, array, max_array);
+        if (velocity < 0 || velocity >= max_array-1) {
+            printf("ERROR bad velocity %d\n", velocity);
+            exit(1);
+        }
+        histogram[velocity]++;
+    }
+
+    max_plot_velocity = sqrt(2 * (10*KT) / MASS);
+    assert(max_plot_velocity <= max_array);
+
+    fp = fopen("test.dat", "w");
+    for (velocity = 0; velocity < max_plot_velocity; velocity++) {
+        fprintf(fp, "%d %d\n", velocity, histogram[velocity]);
+    }
+    fclose(fp);
+
+    gnuplot("test.dat", "[*:*]", "[*:*]", 1, "1:2", "green");
+
+    printf("calc_mine_init test done\n");
 }
 
 double maxwell_boltzmann_probability(double velocity)
@@ -141,123 +195,3 @@ double maxwell_boltzmann_probability(double velocity)
                  exp(-MASS*(velocity_squared) / (2*KT));
     return probability;
 }
-
-// ------------------------------
-
-#if 0
-#define MASS (20 * 1.6603145E-27)
-double array[1000000];
-int max_array=0;
-double maxwell_boltzmann(double velocity);
-int binary_search(double element, double *array, int max);
-
-double calc_mine(double f)
-{
-    double mode_density, energy_density;
-    double sum_energy_quantized, avg_energy_quantized;
-    int i;
-    double hf = 1.22 * h * f;
-
-    mode_density = (8 * M_PI * (f*f)) / (C*C*C);
-
-#define MAX 5000000
-#if 1
-    sum_energy_quantized = 0;
-    for (i = 0; i < MAX; i++) {
-        double p = (double)random() / ((double)RAND_MAX + 1);
-        double velocity = binary_search(p, array, max_array);
-        double energy = .5 * MASS * (velocity * velocity);
-        sum_energy_quantized += floor(energy / hf) * hf;
-        //sum_energy_quantized += energy;
-    }
-    avg_energy_quantized = sum_energy_quantized / MAX;
-#else
-    sum_energy_quantized = 0;
-    for (i = 0; i < MAX; i++) {
-        double p = (double)random() / ((double)RAND_MAX + 1);
-        double velocity = binary_search(p, array, max_array);
-        double energy = .5 * MASS * (velocity * velocity);
-        double tmp = floor(energy / hf) * hf;
-        sum_energy_quantized += tmp*tmp;
-    }
-    avg_energy_quantized = sqrt(sum_energy_quantized / MAX);
-
-#endif
-
-    energy_density = mode_density * avg_energy_quantized;
-    energy_density *= .66666;
-
-    return energy_density;
-}
-
-int test(void)
-{
-    double v;   // meter per second
-    double p;
-    double sum_p=0;
-
-
-    array[max_array++] = 0;
-
-    double maxv = sqrt(2 * (50*KT) / MASS);
-
-    printf("KT = %0.3e\n", KT);
-    printf(".5mv2 for v=%f = %0.3e\n", maxv, .5*MASS*3000*3000);
-
-    for (v = 0; v < maxv; v++) {
-        p = maxwell_boltzmann(v);
-        //printf("%f %12.10f\n", v, p);
-        sum_p += p;
-        array[max_array++] = sum_p;
-    }
-
-    array[max_array++] = 1;
-    printf("sum_p = %f\n", sum_p);
-    printf("max array = %d\n", max_array);
-    printf("max v     = %f\n", maxv);
-
-#if 0
-    printf("xxxxxxxxxxxxxxxxxxxxxxx\n");
-    for (int i = 0; i < max_array; i++) {
-        printf("%d - %f\n", i, array[i]);
-    }
-#endif
-
-#if 0
-    static int histogram[1000000];
-
-    printf("starting\n");
-    for (int i = 0; i < 10000000; i++) {
-        p = (double)random() / ((double)RAND_MAX + 1);
-        idx = binary_search(p, array, max_array);
-        if (idx < 0 || idx >= max_array-1) {
-            printf("ERROR bad idx %d\n", idx);
-            exit(1);
-        }
-        //printf("p = %f, speed = %d\n", p, idx);
-
-        histogram[idx]++;
-    }
-    printf("done\n");
-
-    FILE *fp = fopen("test1.dat", "w");
-    for (int i = 0; i < maxv; i++) {
-        fprintf(fp, "%d %d\n", i, histogram[i]);
-    }
-    fclose(fp);
-
-#if 0
-    system("gnuplot -p \
-              -e \"set term x11 size 1000,600\" \
-              -e \"set xrange [*:*]\" \
-              -e \"set yrange [*:*]\" \
-              -e \"plot 'test1.dat' using 1:2 with lines linewidth 2\" \
-                    ");
-#endif
-#endif
-
-    return 0;
-}
-
-
-#endif
