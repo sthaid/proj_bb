@@ -1,3 +1,4 @@
+// xxx optimize
 // xxx label plot axis and title,  and temperature in plot
 #include "common.h"
 
@@ -5,8 +6,10 @@
 #define   C    299792458.
 #define   h    6.62607004e-34
 
-#define MASS (4.002603 * 1.6603145E-27)  // 4He mass in kg xxx eliminate use of mass  or test with differnet mass
-//#define MASS (1000 * 1.6603145E-27)  // 4He mass in kg xxx eliminate use of mass  or test with differnet mass
+//#define MASS (4.002603 * 1.6603145E-27)  // 4He mass in kg xxx eliminate use of mass  or test with differnet mass
+
+// xxx O2
+#define MASS (32 * 1.6603145E-27)  // 4He mass in kg xxx eliminate use of mass  or test with differnet mass
 
 double T = 6000;
 double KT;
@@ -41,7 +44,7 @@ int main(int argc, char **argv)
             exit(1);
         }
     }
-    printf("T = %0.0f degrees K\n", T);
+    printf("T = %0.1f degrees K\n", T);
     KT = K * T;
 
     // xxx
@@ -50,7 +53,8 @@ int main(int argc, char **argv)
     // calculate the energy density vs frequency using:
     // - Rayleigh–Jeans law
     // - Planck's Law
-    for (max = 0, logf = 10; logf <= 16; logf += .10) {  // xxx .1 vs .01
+    printf("starting\n");
+    for (max = 0, logf = 10; logf <= 16; logf += .05) {  // xxx .1 vs .01
         double f = pow(10, logf);
 
         log_freq[max] = logf;
@@ -61,6 +65,7 @@ int main(int argc, char **argv)
     }
 
     // print results to file plot.dat, for gnuplot
+    printf("plotting\n");
     fp = fopen("plot.dat", "w");
     for (i = 0; i < max; i++) {
         double ratio = mine[i] / rj[i];  // xxx temp
@@ -112,7 +117,8 @@ double calc_planck(double f)
 
 double calc_mine(double f)
 {
-    #define MAX 1000000
+    //#define MAX 100000
+    #define MAX 200000
 
     // xxx cleanup
     double mode_density, energy_density, energy;
@@ -137,29 +143,37 @@ double calc_mine(double f)
 
 double *array;  // xxx names
 int    max_array;
+double delta_v;
 
 void calc_mine_init(void)
 {
-    double max_velocity = sqrt(2 * (50*KT) / MASS);
-    double sum_p = 0, velocity, p;
+    double max_velocity = sqrt(2 * (15*KT) / MASS);
+    double sum_p = 0, p;
+    int idx;
 
-    // xxx determine max-array here
-    array = calloc(max_velocity+10, sizeof(double));
+    delta_v = 0.1;
+    max_array = max_velocity / delta_v;
 
-    array[max_array++] = 0;
-    for (velocity = 0; velocity < max_velocity; velocity++) {
-        p = maxwell_boltzmann_probability(velocity);
-        sum_p += p;
-        array[max_array++] = sum_p;
+    array = calloc(max_array, sizeof(double));
+
+    for (idx = 0; idx < max_array; idx++) {
+        p = maxwell_boltzmann_probability(idx*delta_v);
+        sum_p += p * delta_v;
+        array[idx] = sum_p;
     }
-    array[max_array++] = 1;
 
     printf("calc_mine_init:\n");
     printf("  sum_p        = %f\n", sum_p);
-    printf("  max array    = %d\n", max_array);
-    printf("  max velocity = %f\n", max_velocity);
+    printf("  max_array    = %d\n", max_array);
+    printf("  max_velocity = %f\n", max_velocity);
+    printf("  delt_v       = %f\n", delta_v);
 
-    // xxxx assert 
+#if 0
+    for (idx = 0; idx < max_array; idx++) {
+        printf("%d  %0.18f\n", idx, array[idx]);
+    }
+    exit(1);
+#endif
 
     test();
 }
@@ -169,28 +183,33 @@ double get_energy(void)
     double velocity, energy;
 
     velocity = get_velocity();
-    energy   = .5 * MASS * (velocity * velocity);
+    energy   = (.5 * MASS) * (velocity * velocity);
     return energy;
 }
 
 double get_velocity(void)
 {
     double p;
-    int velocity;
+    int idx;
 
+again:
     p = (double)random() / ((double)RAND_MAX + 1);
-    velocity = binary_search(p, array, max_array);
+    if (p >= array[max_array-1]) goto again;
 
-    if (velocity < 0 || velocity >= max_array-1) {
-        printf("ERROR bad velocity %d\n", velocity);
+    // xxx can this be optimized
+    idx = binary_search(p, array, max_array);
+
+    if (idx < 0 || idx >= max_array-1) {
+        printf("ERROR bad idx %d\n", idx);
         exit(1);
     }
 
-    return velocity;
+    return idx * delta_v;
 }
 
 // - - - - - - - - - - - - - - - - 
 
+// xxx also print the maxwell boltzmen probability
 void test(void)
 {
     int *histogram = calloc(max_array, sizeof(int));
