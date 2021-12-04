@@ -14,12 +14,13 @@ double KT;
 double calc_rj(double f);
 double calc_planck(double f);
 double calc_mine(double f);
+double get_energy(void);
+double get_velocity(void);
 void calc_mine_init(void);
 void test(void); //xxx name
 double maxwell_boltzmann_probability(double velocity);
 
 // -----------------  MAIN  ----------------------------------------------------
-// xxx enter temperature on cmdline
 
 int main(int argc, char **argv)
 {
@@ -109,15 +110,12 @@ double calc_planck(double f)
 
 // -----------------  MINE  -------------------------------------------
 
-double *array;  // xxx names
-int    max_array;
-
 double calc_mine(double f)
 {
     #define MAX 1000000
 
     // xxx cleanup
-    double mode_density, energy_density;
+    double mode_density, energy_density, energy;
     double sum_energy_quantized, avg_energy_quantized;
     double hf = sqrt(1.5) * h * f;
 
@@ -125,9 +123,7 @@ double calc_mine(double f)
 
     sum_energy_quantized = 0;
     for (int i = 0; i < MAX; i++) {
-        double p = (double)random() / ((double)RAND_MAX + 1);  // xxx routine to get velocity
-        double velocity = binary_search(p, array, max_array);
-        double energy = .5 * MASS * (velocity * velocity);
+        energy = get_energy();
         sum_energy_quantized += floor(energy / hf) * hf;
     }
     avg_energy_quantized = sum_energy_quantized / MAX / 1.5;
@@ -137,6 +133,10 @@ double calc_mine(double f)
     return energy_density;
 }
 
+// - - - - - - - - - - - - - - - - 
+
+double *array;  // xxx names
+int    max_array;
 
 void calc_mine_init(void)
 {
@@ -161,26 +161,46 @@ void calc_mine_init(void)
 
     // xxxx assert 
 
-    //test();
+    test();
 }
+
+double get_energy(void)
+{
+    double velocity, energy;
+
+    velocity = get_velocity();
+    energy   = .5 * MASS * (velocity * velocity);
+    return energy;
+}
+
+double get_velocity(void)
+{
+    double p;
+    int velocity;
+
+    p = (double)random() / ((double)RAND_MAX + 1);
+    velocity = binary_search(p, array, max_array);
+
+    if (velocity < 0 || velocity >= max_array-1) {
+        printf("ERROR bad velocity %d\n", velocity);
+        exit(1);
+    }
+
+    return velocity;
+}
+
+// - - - - - - - - - - - - - - - - 
 
 void test(void)
 {
     int *histogram = calloc(max_array, sizeof(int));
     int i, velocity, max_plot_velocity;
-    double p;
     FILE *fp;
 
     printf("test starting\n");
 
     for (i = 0; i < 10000000; i++) {
-        // xxx make a routine from this
-        p = (double)random() / ((double)RAND_MAX + 1);
-        velocity = binary_search(p, array, max_array);
-        if (velocity < 0 || velocity >= max_array-1) {
-            printf("ERROR bad velocity %d\n", velocity);
-            exit(1);
-        }
+        velocity = get_velocity();
         histogram[velocity]++;
     }
 
