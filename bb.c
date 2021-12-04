@@ -29,6 +29,9 @@ int main(int argc, char **argv)
     char yrange[100];
     FILE *fp;
 
+    time_t t = time(NULL);
+    srandom(t);
+
     // get temperature from argv[1]
     if (argc > 1) {
         cnt = sscanf(argv[1], "%lf", &T);
@@ -111,12 +114,12 @@ int    max_array;
 
 double calc_mine(double f)
 {
-    #define MAX 500000
+    #define MAX 1000000
 
     // xxx cleanup
     double mode_density, energy_density;
     double sum_energy_quantized, avg_energy_quantized;
-    double hf = 1.22 * h * f;
+    double hf = sqrt(1.5) * h * f;
 
     mode_density = (8 * M_PI * (f*f)) / (C*C*C);
 
@@ -127,10 +130,9 @@ double calc_mine(double f)
         double energy = .5 * MASS * (velocity * velocity);
         sum_energy_quantized += floor(energy / hf) * hf;
     }
-    avg_energy_quantized = sum_energy_quantized / MAX;
+    avg_energy_quantized = sum_energy_quantized / MAX / 1.5;
 
     energy_density = mode_density * avg_energy_quantized;
-    energy_density *= .66666;
 
     return energy_density;
 }
@@ -159,7 +161,7 @@ void calc_mine_init(void)
 
     // xxxx assert 
 
-    test();
+    //test();
 }
 
 void test(void)
