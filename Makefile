@@ -9,7 +9,6 @@ OBJ := $(SOURCES:.c=.o)
 
 $(TARGET): $(OBJ)
 	$(CC) -o $@ $(OBJ) $(LDFLAGS)
-	./bb
 
 clean:
 	rm -f $(TARGET) $(OBJ)

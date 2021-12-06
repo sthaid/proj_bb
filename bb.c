@@ -13,8 +13,9 @@
 #define AMU_TO_KG(amu)  ((amu) * 1.6603145E-27)
 #define KG_TO_AMU(amu)  ((amu) / 1.6603145E-27)
 
-double mass = AMU_TO_KG(4);
-double T = 298;
+double mass        = AMU_TO_KG(4);
+double T           = 298;
+bool   test_enable = false;
 double KT;
 
 char **extra_cmds(void);
@@ -31,32 +32,55 @@ double maxwell_boltzmann_probability(double velocity);
 
 int main(int argc, char **argv)
 {
-    int max, i, cnt;
+    int max, i;
     double logf, ymax;
     double log_freq[1000], rj[1000], planck[1000], mine[1000];
     char yrange[100];
     FILE *fp;
 
-    // get temperature from argv[1]
-    if (argc > 1) {
-        cnt = sscanf(argv[1], "%lf", &T);
-        if (cnt != 1 || T < 1 || T > 10000) {
-            printf("ERROR: T must be in range 1 to 10000 degrees K\n");
+    // xxx
+    while (true) {
+        int c = getopt(argc, argv, "t:m:z");
+        if (c == -1) break;
+        switch (c) {
+        case 't':   // temperature (degrees K)
+            if (sscanf(optarg, "%lf", &T) != 1 || T < 1 || T > 20000) {
+                printf("ERROR: invalid temperature, 1 to 20000 degrees K expected\n");
+                exit(1);
+            }
+            break;
+        case 'm': { // mass (AMU)
+            double amu;
+            if (sscanf(optarg, "%lf", &amu) != 1 || amu < 1 || amu > 1000) {
+                printf("ERROR: invalid mass, 1 to 1000 AMU expected\n");
+                exit(1);
+            }
+            mass = AMU_TO_KG(amu);
+            break; }
+        case 'z':
+            test_enable = true;
+            break;
+        default:
             exit(1);
         }
     }
-    printf("T = %0.1f degrees K\n", T);
-    KT = K * T;
+
+    printf("T    = %0.1f degrees K\n", T);
+    printf("mass = %0.1f AMU\n", KG_TO_AMU(mass));
+    KT = K * T;  // xxx print this ?
 
     // xxx
     init();
+    if (test_enable) {
+        test();
+    }
 
     // calculate the energy density vs frequency using:
     // - Rayleigh–Jeans law
     // - Planck's Law
     // - xxx
     printf("starting\n");
-    for (max = 0, logf = 10; logf <= 16; logf += .500) {  // xxx .050 is good
+    for (max = 0, logf = 10; logf <= 16; logf += .050) {  // xxx .050 is good  USE .5 for testing
         double f = pow(10, logf);
 
         log_freq[max] = logf;
@@ -115,8 +139,8 @@ char **extra_cmds(void)
             extra_cmds[max++] = p; \
         } while (0)
 
-    ADD(700, "red");
-    ADD(600, "orange");
+    ADD(685, "red");
+    ADD(605, "orange");
     ADD(580, "yellow");
     ADD(530, "green");
     ADD(475, "blue");
@@ -208,9 +232,6 @@ void init(void)
     }
     exit(1);
 #endif
-
-    //test();
-    //exit(1);
 }
 
 // xxx get rid of this, and put all these in maxwel boltzman section
@@ -283,7 +304,7 @@ void test(void)
     for (velocity = 0; velocity < max_plot_velocity; velocity++) {
         double p1 = (double)histogram[velocity] / MAX_TEST;
         double p2 = maxwell_boltzmann_probability(velocity);
-        fprintf(fp, "%d %0.6f %0.6f\n", velocity, p1, p2);
+        fprintf(fp, "%d %0.9f %0.9f\n", velocity, p1, p2);
         sum_p1 += p1;
         sum_p2 += p2;
         if (p1 > max) max = p1;

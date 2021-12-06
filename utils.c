@@ -58,6 +58,7 @@ int binary_search(double element, double *array, int max)
     return -1;
 }
 
+// xxx used?
 double max_array_val(int max_elem, ...)
 {
     double max = -INFINITY, *array;
