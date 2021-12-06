@@ -8,5 +8,8 @@
 #include <errno.h>
 #include <time.h>
 
+void gnuplot(char *title, char *filename, char *xlabel, char *xrange, char *ylabel, char *yrange, 
+             char **extra_cmds, ...);
+
 int binary_search(double element, double *array, int max);
-void gnuplot(char *filename, char *xrange, char *yrange, int num_plot, ...);
+double max_array_val(int max_elem, ...);

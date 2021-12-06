@@ -26,3 +26,25 @@ Maxwell–Boltzmann distribution
 
 Planck's law
 - https://en.wikipedia.org/wiki/Planck%27s_law
+
+
+Reading Feynman - Pnanck's Constant
+https://readingfeynman.org/2014/09/22/plancks-constant-h/
+
+
+Gnuplot
+http://gnuplot.sourceforge.net/docs_4.2/gnuplot.html
+http://gnuplot.sourceforge.net/docs_4.2/node77.html
+
+
+https://en.wikipedia.org/wiki/Block_Elements
+
+
+^vuCODE in hex
+
+    //p += sprintf(p, "  -e \"set label 'LABEL' at graph 0.5,0 textcolor rgb 'red'\"");
+    p += sprintf(p, "  -e \"set label '▄' front at graph 0.25,0 center textcolor rgbcolor '#ff0000'\"");
+    p += sprintf(p, "  -e \"set label '▄' front at graph 0.30,0 center textcolor rgbcolor '#00ff00'\"");
+    p += sprintf(p, "  -e \"set label '▄' front at graph 0.35,0 center textcolor rgbcolor '#0000ff'\"");
+
+https://en.wikipedia.org/wiki/Block_Elements

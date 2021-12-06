@@ -1,3 +1,7 @@
+// show where light specturm is in plot
+// labelling gnuplot 
+// args for test plot and for Mass
+
 // xxx optimize
 // xxx label plot axis and title,  and temperature in plot
 #include "common.h"
@@ -6,20 +10,20 @@
 #define   C    299792458.
 #define   h    6.62607004e-34
 
-//#define MASS (4.002603 * 1.6603145E-27)  // 4He mass in kg xxx eliminate use of mass  or test with differnet mass
+#define AMU_TO_KG(amu)  ((amu) * 1.6603145E-27)
+#define KG_TO_AMU(amu)  ((amu) / 1.6603145E-27)
 
-// xxx O2
-#define MASS (32 * 1.6603145E-27)  // 4He mass in kg xxx eliminate use of mass  or test with differnet mass
-
-double T = 6000;
+double mass = AMU_TO_KG(4);
+double T = 298;
 double KT;
 
+char **extra_cmds(void);
 double calc_rj(double f);
 double calc_planck(double f);
 double calc_mine(double f);
 double get_energy(void);
 double get_velocity(void);
-void calc_mine_init(void);
+void init(void);
 void test(void); //xxx name
 double maxwell_boltzmann_probability(double velocity);
 
@@ -33,9 +37,6 @@ int main(int argc, char **argv)
     char yrange[100];
     FILE *fp;
 
-    time_t t = time(NULL);
-    srandom(t);
-
     // get temperature from argv[1]
     if (argc > 1) {
         cnt = sscanf(argv[1], "%lf", &T);
@@ -48,13 +49,14 @@ int main(int argc, char **argv)
     KT = K * T;
 
     // xxx
-    calc_mine_init();
+    init();
 
     // calculate the energy density vs frequency using:
     // - Rayleigh–Jeans law
     // - Planck's Law
+    // - xxx
     printf("starting\n");
-    for (max = 0, logf = 10; logf <= 16; logf += .05) {  // xxx .1 vs .01
+    for (max = 0, logf = 10; logf <= 16; logf += .500) {  // xxx .050 is good
         double f = pow(10, logf);
 
         log_freq[max] = logf;
@@ -63,6 +65,7 @@ int main(int argc, char **argv)
         mine[max] = calc_mine(f);
         max++;
     }
+    // xxx print how long it took
 
     // print results to file plot.dat, for gnuplot
     printf("plotting\n");
@@ -84,14 +87,43 @@ int main(int argc, char **argv)
 
     // run gnuplot
     sprintf(yrange, "[0:%e]", 1.5*ymax);
-    printf("yrange '%s'\n", yrange);
-    gnuplot("plot.dat", "[*:*]", yrange, 3, 
-            "1:2", "red",
-            "1:3", "purple",
-            "1:4", "blue");
+    gnuplot("", "plot.dat", 
+            "Frequency", "[*:*]", 
+            "Energy Density", yrange, 
+            extra_cmds(),
+            "Rayleigh–Jeans" , "1:2", "red",
+            "Planck", "1:3", "purple",
+            "Mine", "1:4", "blue",
+            NULL, NULL, NULL);
 
     // done
     return 0;
+}
+
+char **extra_cmds(void)
+{
+    static char *extra_cmds[10];
+    int max=0;
+
+    #define ADD(wvlen_nm, color) \
+        do { \
+            char *p = calloc(200, sizeof(char)); \
+            sprintf(p,  \
+                "set label '▄' front at graph %0.3f,0 center textcolor rgbcolor '%s'", \
+                (log10(C/((wvlen_nm)*1e-9)) - 10) / 6,  /* xxx comment */ \
+                (color)); \
+            extra_cmds[max++] = p; \
+        } while (0)
+
+    ADD(700, "red");
+    ADD(600, "orange");
+    ADD(580, "yellow");
+    ADD(530, "green");
+    ADD(475, "blue");
+    ADD(420, "violet");
+    extra_cmds[max] = NULL;
+
+    return extra_cmds;
 }
 
 // -----------------  RAYLEIGH-JEANS  ---------------------------------
@@ -115,24 +147,26 @@ double calc_planck(double f)
 
 // -----------------  MINE  -------------------------------------------
 
+// xxx move prototypes here
+
 double calc_mine(double f)
 {
     //#define MAX 100000
-    #define MAX 200000
+    #define MAX 500000
 
     // xxx cleanup
     double mode_density, energy_density, energy;
     double sum_energy_quantized, avg_energy_quantized;
-    double hf = sqrt(1.5) * h * f;
+    double hf = h * f * sqrt(2./3.);
 
     mode_density = (8 * M_PI * (f*f)) / (C*C*C);
 
     sum_energy_quantized = 0;
     for (int i = 0; i < MAX; i++) {
-        energy = get_energy();
+        energy = get_energy() * (2./3.);
         sum_energy_quantized += floor(energy / hf) * hf;
     }
-    avg_energy_quantized = sum_energy_quantized / MAX / 1.5;
+    avg_energy_quantized = sum_energy_quantized / MAX;
 
     energy_density = mode_density * avg_energy_quantized;
 
@@ -145,9 +179,9 @@ double *array;  // xxx names
 int    max_array;
 double delta_v;
 
-void calc_mine_init(void)
+void init(void)
 {
-    double max_velocity = sqrt(2 * (15*KT) / MASS);
+    double max_velocity = sqrt(2 * (15*KT) / mass);
     double sum_p = 0, p;
     int idx;
 
@@ -162,7 +196,7 @@ void calc_mine_init(void)
         array[idx] = sum_p;
     }
 
-    printf("calc_mine_init:\n");
+    printf("init:\n");
     printf("  sum_p        = %f\n", sum_p);
     printf("  max_array    = %d\n", max_array);
     printf("  max_velocity = %f\n", max_velocity);
@@ -175,15 +209,17 @@ void calc_mine_init(void)
     exit(1);
 #endif
 
-    test();
+    //test();
+    //exit(1);
 }
 
+// xxx get rid of this, and put all these in maxwel boltzman section
 double get_energy(void)
 {
     double velocity, energy;
 
     velocity = get_velocity();
-    energy   = (.5 * MASS) * (velocity * velocity);
+    energy   = (.5 * mass) * (velocity * velocity);
     return energy;
 }
 
@@ -207,44 +243,63 @@ again:
     return idx * delta_v;
 }
 
-// - - - - - - - - - - - - - - - - 
-
-// xxx also print the maxwell boltzmen probability
-void test(void)
-{
-    int *histogram = calloc(max_array, sizeof(int));
-    int i, velocity, max_plot_velocity;
-    FILE *fp;
-
-    printf("test starting\n");
-
-    for (i = 0; i < 10000000; i++) {
-        velocity = get_velocity();
-        histogram[velocity]++;
-    }
-
-    max_plot_velocity = sqrt(2 * (10*KT) / MASS);
-    assert(max_plot_velocity <= max_array);
-
-    fp = fopen("test.dat", "w");
-    for (velocity = 0; velocity < max_plot_velocity; velocity++) {
-        fprintf(fp, "%d %d\n", velocity, histogram[velocity]);
-    }
-    fclose(fp);
-
-    gnuplot("test.dat", "[*:*]", "[*:*]", 1, "1:2", "green");
-
-    printf("calc_mine_init test done\n");
-}
-
 double maxwell_boltzmann_probability(double velocity)
 {
     double velocity_squared = velocity * velocity;
     double probability;
 
-    // xxx try eliminating the mass, and just use energy
-    probability = pow(MASS / (2*M_PI*KT), 1.5) * 
+    probability = pow(mass / (2*M_PI*KT), 1.5) * 
                  (4*M_PI) * velocity_squared *
-                 exp(-MASS*(velocity_squared) / (2*KT));
+                 exp(-mass*(velocity_squared) / (2*KT));
     return probability;
+}
+
+// - - - - - - - - - - - - - - - - 
+
+// xxx also print the maxwell boltzmen probability
+void test(void)
+{
+    int *histogram = calloc(max_array, sizeof(int));  // xxx calloc size
+    int i, velocity, max_plot_velocity;
+    FILE *fp;
+    char title[100];
+    double sum_p1=0, sum_p2=0;
+    double max = -INFINITY;
+
+    #define MAX_TEST 10000000
+
+    printf("test starting\n");
+
+    for (i = 0; i < MAX_TEST; i++) {
+        velocity = (int)get_velocity();
+        histogram[velocity]++;
+    }
+
+    max_plot_velocity = sqrt(2 * (10*KT) / mass);
+    printf("max_plot_velocity = %d\n", max_plot_velocity);
+    assert(max_plot_velocity <= max_array);  // xxx check this
+
+    fp = fopen("test.dat", "w");
+    for (velocity = 0; velocity < max_plot_velocity; velocity++) {
+        double p1 = (double)histogram[velocity] / MAX_TEST;
+        double p2 = maxwell_boltzmann_probability(velocity);
+        fprintf(fp, "%d %0.6f %0.6f\n", velocity, p1, p2);
+        sum_p1 += p1;
+        sum_p2 += p2;
+        if (p1 > max) max = p1;
+        if (p2 > max) max = p2;
+    }
+    fclose(fp);
+    printf("SUM_P1/2 %0.6f %0.6f\n", sum_p1, sum_p2);
+
+    sprintf(title, "Maxwell Boltzmann - m=%0.0f AMU, t=%0.1f K", KG_TO_AMU(mass), T);
+    gnuplot(title, "test.dat", 
+            "Speed m/s", "[*:*]", 
+            "Probability", "[*:*]", 
+            NULL,
+            "", "1:2", "green", 
+            "", "1:3", "blue",
+            NULL, NULL, NULL);
+
+    printf("init test done\n");
 }
