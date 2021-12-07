@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdarg.h>
+#include <stdint.h>
 #include <unistd.h>
 #include <math.h>
 #include <assert.h>
@@ -14,3 +15,4 @@ void gnuplot(char *title, char *filename, char *xlabel, char *xrange, char *ylab
 
 int binary_search(double element, double *array, int max);
 double max_array_val(int max_elem, ...);
+uint64_t microsec_timer(void);
