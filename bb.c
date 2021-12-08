@@ -1,6 +1,10 @@
 // xxx
-// mark KT on MB
-// xxx optimize
+// comments throughout
+// comment define constants
+// need to understand the 2/3
+// eliminate mb_get_energy ?
+// mark avg and rms on mb test
+// add help/usage
 
 #include "common.h"
 
@@ -8,9 +12,9 @@
 // defines
 //
 
-#define   K    1.380649E-23
-#define   C    299792458.
-#define   h    6.62607004e-34
+#define K   1.380649E-23
+#define C   299792458.
+#define h   6.62607004e-34
 
 #define AMU_TO_KG(amu)  ((amu) * 1.6603145E-27)
 #define KG_TO_AMU(amu)  ((amu) / 1.6603145E-27)
@@ -81,6 +85,7 @@ int main(int argc, char **argv)
     printf("T    = %0.1f degrees K\n", T);
     printf("mass = %0.1f AMU\n", KG_TO_AMU(mass));
     printf("KT   = %e joules\n", KT);
+    printf("\n");
 
     // initialize
     mb_init();
@@ -92,7 +97,7 @@ int main(int argc, char **argv)
     // calculate the black-body energy density vs frequency using:
     // - Rayleigh–Jeans law
     // - Planck's Law
-    // - My code
+    // - My black body calculation
     int max = 0;
     double logf;
     double log_freq[1000], rj[1000], planck[1000], mine[1000];
@@ -109,6 +114,7 @@ int main(int argc, char **argv)
         max++;
     }
     printf("black-body complete, %0.3f secs\n", (microsec_timer() - start) / 1000000.);
+    printf("\n");
 
     // print results to file plot.dat, for gnuplot
     printf("plotting\n");
@@ -123,11 +129,12 @@ int main(int argc, char **argv)
 
     // run gnuplot
     double ymax;
-    char yrange[100];
+    char yrange[100], title[100];
+    sprintf(title, "Black Body - T=%0.1f K", T);
     ymax = max_array_val(max, mine, planck, NULL);
     sprintf(yrange, "[0:%e]", 1.5*ymax);
-    gnuplot("", "plot.dat", 
-            "Frequency", "[*:*]", 
+    gnuplot(title, "plot.dat", 
+            "Log Frequency", "[10:16]", 
             "Energy Density", yrange, 
             extra_gnuplot_cmds(),
             "Rayleigh–Jeans" , "1:2", "red",
@@ -142,7 +149,6 @@ int main(int argc, char **argv)
 // return extra gnuplot cmds to display the location of the visible light 
 // spectrum under the x-axis of the black-body plot;
 // notes:
-// - the '10' and '6' values in the code are the x-axis origin and span
 // - to enter utf8 using vi: ^vu<hex_code>
 // - https://en.wikipedia.org/wiki/Block_Elements
 // - the block element used below is U+2584 (lower half block)
@@ -155,8 +161,8 @@ char **extra_gnuplot_cmds(void)
         do { \
             char *p = calloc(200, sizeof(char)); \
             sprintf(p,  \
-                "set label '▄' front at graph %0.3f,0 center textcolor rgbcolor '%s'", \
-                (log10(C/((wvlen_nm)*1e-9)) - 10) / 6, \
+                "set label '▄' front at first %0.3f,0 center textcolor rgbcolor '%s'", \
+                log10(C/((wvlen_nm)*1e-9)), \
                 (color)); \
             extra_cmds[max++] = p; \
         } while (0)
@@ -193,12 +199,9 @@ double calc_planck(double f)
 
 // -----------------  MY BLACK-BODY  ----------------------------------
 
-// xxx need to understand the 2/3
-// xxx and comments
 double calc_mine(double f)
 {
     #define MAX 500000
-
     double mode_density, energy_density, energy;
     double sum_energy_quantized, avg_energy_quantized;
     double hf = h * f * sqrt(2./3.);
@@ -219,10 +222,9 @@ double calc_mine(double f)
 
 // -----------------  MAXWELL BOLTZMANN  ------------------------------
 
-// cum_mb_p: is the cumulative maxwell boltzmann probability array;
-//           indexed in delta_v units
-double *cum_mb_p;      
-int     max_cum_mb_p;
+// cum_mb: is the cumulative maxwell boltzmann probability array; indexed in delta_v units
+double *cum_mb;      
+int     max_cum_mb;
 double  delta_v = 0.1;
 
 void mb_init(void)
@@ -230,29 +232,30 @@ void mb_init(void)
     double max_v = sqrt(2 * (15*KT) / mass);
     double sum_p = 0, p;
 
-    max_cum_mb_p = max_v / delta_v;
-    cum_mb_p = calloc(max_cum_mb_p, sizeof(double));
+    max_cum_mb = max_v / delta_v;
+    cum_mb = calloc(max_cum_mb, sizeof(double));
 
-    for (int idx = 0; idx < max_cum_mb_p; idx++) {
+    for (int idx = 0; idx < max_cum_mb; idx++) {
         p = mb_probability(idx*delta_v);
         sum_p += p * delta_v;
-        cum_mb_p[idx] = sum_p;
+        cum_mb[idx] = sum_p;
     }
 
     printf("mb_init:\n");
-    printf("  delt_v       = %f\n", delta_v);
-    printf("  max_v        = %f\n", max_v);
-    printf("  sum_p        = %f\n", sum_p);  // xxx assert
-    printf("  max_cum_mb_p = %d\n", max_cum_mb_p);
-
+    printf("  delt_v     = %f\n", delta_v);
+    printf("  max_v      = %f\n", max_v);
+    printf("  max_cum_mb = %d\n", max_cum_mb);
+    printf("  sum_p      = %f\n", sum_p);
 #if 0
-    for (int idx = 0; idx < max_cum_mb_p; idx++) {
-        printf("%d  %0.18f\n", idx, cum_mb_p[idx]);
+    for (int idx = 0; idx < max_cum_mb; idx++) {
+        printf("  %d  %0.18f\n", idx, cum_mb[idx]);
     }
 #endif
+    printf("\n");
+
+    assert(sum_p > 0.9999 && sum_p <= 1);
 }
 
-// xxx elim this ?
 double mb_get_energy(void)
 {
     double velocity, energy;
@@ -264,16 +267,16 @@ double mb_get_energy(void)
 
 double mb_get_velocity(void)
 {
-    double p;
+    double rand_range_0_1;
     int idx;
 
     do {
-        p = (double)random() / ((double)RAND_MAX + 1);
-    } while (p >= cum_mb_p[max_cum_mb_p-1]);
+        rand_range_0_1 = (double)random() / ((double)RAND_MAX + 1);
+    } while (rand_range_0_1 >= cum_mb[max_cum_mb-1]);
 
-    idx = binary_search(p, cum_mb_p, max_cum_mb_p);
-    if (idx < 0 || idx >= max_cum_mb_p-1) {
-        printf("ERROR bad idx %d\n", idx);
+    idx = binary_search(rand_range_0_1, cum_mb, max_cum_mb);
+    if (idx < 0 || idx >= max_cum_mb-1) {
+        printf("ERROR mb_get_velocity, bad idx %d\n", idx);
         exit(1);
     }
 
@@ -291,54 +294,56 @@ double mb_probability(double velocity)
     return probability;
 }
 
-// - - - - - - - - - - - - - - - - 
-
-// xxx also print the maxwell boltzmen probability
 void mb_test(void)
 {
-    int *histogram = calloc(max_cum_mb_p, sizeof(int));  // xxx calloc size
-    int i, velocity, max_plot_velocity;
+    int i, velocity, max_plot_velocity, *histogram, histogram_cnt=0;
     FILE *fp;
     char title[100];
     double sum_p1=0, sum_p2=0;
-//    double max = -INFINITY;
+    uint64_t start = microsec_timer();
 
     #define MAX_TEST 10000000
 
     printf("test starting\n");
 
+    max_plot_velocity = sqrt(2 * (10*KT) / mass);
+    histogram = calloc(max_plot_velocity, sizeof(int));
+    printf("  max_plot_velocity = %d\n", max_plot_velocity);
+
     for (i = 0; i < MAX_TEST; i++) {
         velocity = (int)mb_get_velocity();
+        if (velocity >= max_plot_velocity) {
+            //printf("  velocity=%d m/s, out of range\n", velocity);
+            continue;
+        }
         histogram[velocity]++;
+        histogram_cnt++;
     }
-
-    max_plot_velocity = sqrt(2 * (10*KT) / mass);
-    printf("max_plot_velocity = %d\n", max_plot_velocity);
-    assert(max_plot_velocity <= max_cum_mb_p);  // xxx check this
+    printf("  MAX_TEST          = %d\n", MAX_TEST);
+    printf("  histogram_cnt     = %d\n", histogram_cnt);
 
     fp = fopen("test.dat", "w");
     for (velocity = 0; velocity < max_plot_velocity; velocity++) {
-        double p1 = (double)histogram[velocity] / MAX_TEST;
+        double p1 = (double)histogram[velocity] / histogram_cnt;
         double p2 = mb_probability(velocity);
         fprintf(fp, "%d %0.9f %0.9f\n", velocity, p1, p2);
         sum_p1 += p1;
         sum_p2 += p2;
-        //xxx if (p1 > max) max = p1;
-        //xxx if (p2 > max) max = p2;
     }
     fclose(fp);
-    printf("SUM_P1/2 %0.6f %0.6f\n", sum_p1, sum_p2);
-    // asserts
 
-    double ktv = sqrt(2 * KT / mass);
+    if (sum_p1 < 0.999 || sum_p1 > 1.001 || sum_p2 < 0.999 || sum_p2 > 1.001) {
+        printf("  ERROR: sum_p1=%0.20f sum_p2=%0.6f\n", sum_p1, sum_p2);
+        exit(1);
+    }
+
+    double kt_velocity = sqrt(2 * KT / mass);
     char cmd[100];
     char *extra_gnuplot_cmds[2] = {cmd, NULL};
-    printf("ktv %f\n", ktv);
-    sprintf(cmd, "set label 'KT' front at graph %0.3f,0 center textcolor rgbcolor 'blue'", 
-          ktv / 4000);  //xxx 4000
-            
+    printf("  kt_velocity       = %f\n", kt_velocity);
+    sprintf(cmd, "set label 'KT' front at first %0.3f,0 center textcolor rgbcolor 'blue'", kt_velocity);
 
-    sprintf(title, "Maxwell Boltzmann - m=%0.0f AMU, t=%0.1f K", KG_TO_AMU(mass), T);
+    sprintf(title, "Maxwell Boltzmann - Mass=%0.0f AMU, T=%0.1f K", KG_TO_AMU(mass), T);
     gnuplot(title, "test.dat", 
             "Speed m/s", "[*:*]", 
             "Probability", "[*:*]", 
@@ -347,5 +352,6 @@ void mb_test(void)
             "", "1:3", "blue",
             NULL, NULL, NULL);
 
-    printf("init test done\n");
+    printf("  test done, %0.3f secs\n", (microsec_timer() - start) / 1000000.);
+    printf("\n");
 }

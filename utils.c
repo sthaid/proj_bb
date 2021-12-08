@@ -30,7 +30,7 @@ void gnuplot(char *title, char *filename, char *xlabel, char *xrange, char *ylab
     va_end(ap);
     p += sprintf(p, "\"");
 
-    printf("CMD %s\n", cmd);
+    //printf("CMD %s\n", cmd);
 
     rc = system(cmd);
     if (rc < 0) {
@@ -58,7 +58,6 @@ int binary_search(double element, double *array, int max)
     return -1;
 }
 
-// xxx used?
 double max_array_val(int max_elem, ...)
 {
     double max = -INFINITY, *array;
