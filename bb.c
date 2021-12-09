@@ -2,7 +2,6 @@
 // comments throughout
 // comment define constants
 // need to understand the 2/3
-// eliminate mb_get_energy ?
 // mark avg and rms on mb test
 // add help/usage
 
@@ -12,9 +11,9 @@
 // defines
 //
 
-#define K   1.380649E-23
-#define C   299792458.
-#define h   6.62607004e-34
+#define K   1.38064852E-23   // boltzmann constant
+#define C   299792458.       // speed of light
+#define h   6.62607004e-34   // planck constant
 
 #define AMU_TO_KG(amu)  ((amu) * 1.6603145E-27)
 #define KG_TO_AMU(amu)  ((amu) / 1.6603145E-27)
@@ -23,8 +22,8 @@
 // variables
 //
 
-double mass        = AMU_TO_KG(4);
-double T           = 298;
+double mass           = AMU_TO_KG(4);
+double T              = 298;
 bool   mb_test_enable = false;
 double KT;
 
@@ -38,11 +37,10 @@ double calc_rj(double f);
 double calc_planck(double f);
 double calc_mine(double f);
 
-double mb_get_energy(void);
-double mb_get_velocity(void);
 void mb_init(void);
-void mb_test(void);
+double mb_get_velocity(void);
 double mb_probability(double velocity);
+void mb_test(void);
 
 // -----------------  MAIN  ----------------------------------------------------
 
@@ -202,7 +200,7 @@ double calc_planck(double f)
 double calc_mine(double f)
 {
     #define MAX 500000
-    double mode_density, energy_density, energy;
+    double mode_density, energy_density, energy, velocity;
     double sum_energy_quantized, avg_energy_quantized;
     double hf = h * f * sqrt(2./3.);
 
@@ -210,7 +208,8 @@ double calc_mine(double f)
 
     sum_energy_quantized = 0;
     for (int i = 0; i < MAX; i++) {
-        energy = mb_get_energy() * (2./3.);
+        velocity = mb_get_velocity() * sqrt(2./3.);
+        energy   = (.5 * mass) * (velocity * velocity);
         sum_energy_quantized += floor(energy / hf) * hf;
     }
     avg_energy_quantized = sum_energy_quantized / MAX;
@@ -254,15 +253,6 @@ void mb_init(void)
     printf("\n");
 
     assert(sum_p > 0.9999 && sum_p <= 1);
-}
-
-double mb_get_energy(void)
-{
-    double velocity, energy;
-
-    velocity = mb_get_velocity();
-    energy   = (.5 * mass) * (velocity * velocity);
-    return energy;
 }
 
 double mb_get_velocity(void)
