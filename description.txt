@@ -1,0 +1,76 @@
+Intro
+- purpose to understan origin of Planck constant
+- what is plancks constant
+- why is it important
+
+References
+
+What is Black Body Radiation
+
+What was known about light in the 1800s
+- interference patterns
+- maxwell's equations
+- speed of light
+- c = f * wavelength
+
+Statistical Mechanics
+- what is it
+- history of important discoveries
+
+Equal Partitioning and Boltzmanns Constant
+
+Raleigh Jeans Law
+- black body chamber
+- gas molecules in the chamber
+  - degrees of freedom
+- ligtt waves in the chamber
+  - constrained to zero electric field at walls
+  - how many modes, (mode_density),  refer to Appendix for details
+- formula
+  - each mode has KT energy
+  - what's good about this formula
+  - what's wrong
+- comparison graph of RJ, vs actual black body radiation (from Planck's formula)
+- UV Catastrophe
+
+Planck's Law (check this name)
+- Planck's goal was to derive a BB formula that agreed with experimental results
+- Did not know about photons or quantum mechanics
+  - when was Planck doing this
+  - when were photons discovered
+  - when was quantum mechanics discovered
+- Difficult problem for Planck, how long did it take
+- Planck discovered that if he assumed that light waves can only have discrete energy values
+  then he derived this formula for black body radiation
+     formula
+  This formula has a constant 'h', which value he set to make the formula agree with experiment.
+  This 'h' is now known as Planck's constant.
+- These discrete energy values are proportional to the frequency of the light wave, (h*f).
+  Provide Examples for infrared and UV
+- How does discrete energy values both preserve RJ Law at low frequencies, and resolve the
+  problem with RJ Law (Ultraviolet Catastrophe) at high frequency. Review:
+   - each mode, regardless of the light frequency, has energy KT
+   - the mode density is proportional to frequency squared
+   -    RJ(f) proportionalto freq^2 * KT
+ For Planck's solution at low frequencies
+    hf is much smaller than KT, so the amount of energy quantization is small,
+      for example, suppose KT=91 and at a low frequencey hf=2 (allowed energy values of
+      0,2,4,6,8,...88,90,92,..); then KT will be quantized to 90 (a small cahange from 91).
+ For Planck's solution at high frequencies
+    hf is close to KT, so the amount of energy quantization can be large,
+      for example, suppose KT=91 and at a high frequencey hf=50 (meaning that energy
+      can take discrete values of 0, 50, 100, 150, ...; then KT will be quantized to 50
+      (a large change from 91)
+- Plank's constant is fundamental to quantum mechanics; however Planck did not understand
+  the significance of his discovery. ... what was he thinking?
+
+My simulation version 1
+- similar to RJ formula but replace KT with quantized value
+     KT_quantized = xxxxxxxx
+- show graph
+
+My simulation version 2
+- describe improvement
+- show graph
+
+APPENDIX Light Waves in BB Chamber, Mode Density
