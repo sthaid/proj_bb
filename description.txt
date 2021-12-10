@@ -1,7 +1,15 @@
+===========
+OUTLINE
+===========
+
 Intro
 - purpose to understan origin of Planck constant
 - what is plancks constant
 - why is it important
+
+- I'm not an expert
+- good way to learn is to try to explain
+- computer software might be able to easily reproduce planck's result
 
 References
 
@@ -72,5 +80,6 @@ My simulation version 1
 My simulation version 2
 - describe improvement
 - show graph
+- the 2/3 problem
 
 APPENDIX Light Waves in BB Chamber, Mode Density

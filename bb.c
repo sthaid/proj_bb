@@ -1,9 +1,6 @@
 // xxx
-// comments throughout
-// comment define constants
-// need to understand the 2/3
-// mark avg and rms on mb test
-// add help/usage
+// review comments throughout
+// add help/usage, or comments in the code header
 
 #include "common.h"
 
@@ -35,7 +32,8 @@ char **extra_gnuplot_cmds(void);
 
 double calc_rj(double f);
 double calc_planck(double f);
-double calc_mine(double f);
+double calc_mine1(double f);
+double calc_mine2(double f);
 
 void mb_init(void);
 double mb_get_velocity(void);
@@ -88,8 +86,14 @@ int main(int argc, char **argv)
     // initialize
     mb_init();
 
+    // if maxwell-boltzmann test enable then call mb_test; 
+    // this test will plot the maxwell-boltzmann velocity distribution and
+    // also call mb_get_velocity many times to confirm that mb_get_velocity
+    // is returning random velocities in accordance to the maxwell-boltzmann
+    // velocity probability distribution
     if (mb_test_enable) {
         mb_test();
+        return 0;
     }
 
     // calculate the black-body energy density vs frequency using:
@@ -98,17 +102,18 @@ int main(int argc, char **argv)
     // - My black body calculation
     int max = 0;
     double logf;
-    double log_freq[1000], rj[1000], planck[1000], mine[1000];
+    double log_freq[1000], rj[1000], planck[1000], mine1[1000], mine2[1000];;
 
     printf("black-body starting\n");
     uint64_t start = microsec_timer();
-    for (logf = 10; logf <= 16; logf += .050) {  // .050 is good, use .5 for testing
+    for (logf = 10; logf <= 16; logf += .05) {  // .05 is good, use .5 for testing
         double f = pow(10, logf);
 
         log_freq[max] = logf;
         rj[max] = calc_rj(f);
         planck[max] = calc_planck(f);
-        mine[max] = calc_mine(f);
+        mine1[max] = calc_mine1(f);
+        mine2[max] = calc_mine2(f);
         max++;
     }
     printf("black-body complete, %0.3f secs\n", (microsec_timer() - start) / 1000000.);
@@ -118,10 +123,8 @@ int main(int argc, char **argv)
     printf("plotting\n");
     FILE *fp = fopen("plot.dat", "w");
     for (int i = 0; i < max; i++) {
-        double ratio_rj = mine[i] / rj[i];
-        double ratio_planck = mine[i] / planck[i];
-        fprintf(fp, "%0.3f %10.3e %10.3e %10.3e  # %10f %10f\n",
-                log_freq[i], rj[i], planck[i], mine[i], ratio_rj, ratio_planck);
+        fprintf(fp, "%0.3f %10.3e %10.3e %10.3e %10.3e\n",
+                log_freq[i], rj[i], planck[i], mine1[i], mine2[i]);
     }
     fclose(fp);
 
@@ -129,7 +132,8 @@ int main(int argc, char **argv)
     double ymax;
     char yrange[100], title[100];
     sprintf(title, "Black Body - T=%0.1f K", T);
-    ymax = max_array_val(max, mine, planck, NULL);
+
+    ymax = max_array_val(max, mine1, planck, NULL);
     sprintf(yrange, "[0:%e]", 1.5*ymax);
     gnuplot(title, "plot.dat", 
             "Log Frequency", "[10:16]", 
@@ -137,7 +141,18 @@ int main(int argc, char **argv)
             extra_gnuplot_cmds(),
             "Rayleigh–Jeans" , "1:2", "red",
             "Planck", "1:3", "purple",
-            "Mine", "1:4", "blue",
+            "Mine1", "1:4", "blue",
+            NULL, NULL, NULL);
+
+    ymax = max_array_val(max, mine2, planck, NULL);
+    sprintf(yrange, "[0:%e]", 1.5*ymax);
+    gnuplot(title, "plot.dat", 
+            "Log Frequency", "[10:16]", 
+            "Energy Density", yrange, 
+            extra_gnuplot_cmds(),
+            "Rayleigh–Jeans" , "1:2", "red",
+            "Planck", "1:3", "purple",
+            "Mine2", "1:5", "blue",
             NULL, NULL, NULL);
 
     // done
@@ -197,7 +212,19 @@ double calc_planck(double f)
 
 // -----------------  MY BLACK-BODY  ----------------------------------
 
-double calc_mine(double f)
+double calc_mine1(double f)
+{
+    double mode_density, energy_density, KT_quantized;;
+    double hf = h * f;
+
+    mode_density = (8 * M_PI * (f*f)) / (C*C*C);
+    KT_quantized = floor(KT / hf) * hf;
+    energy_density = mode_density * KT_quantized;
+
+    return energy_density;
+}
+
+double calc_mine2(double f)
 {
     #define MAX 500000
     double mode_density, energy_density, energy, velocity;
