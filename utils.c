@@ -85,3 +85,30 @@ uint64_t microsec_timer(void)
     return  ((uint64_t)ts.tv_sec * 1000000) + ((uint64_t)ts.tv_nsec / 1000);
 }
 
+void random_vector(double magnitude, double * x, double * y, double * z)
+{
+    double x_try, y_try, z_try, hypot, f;
+
+    // compute x/y/z_try within a spherical shell 
+    while (true) {
+        x_try = random() - (RAND_MAX/2.);
+        y_try = random() - (RAND_MAX/2.);
+        z_try = random() - (RAND_MAX/2.);
+        hypot = hypotenuse(x_try,y_try,z_try);
+        if (hypot >= (RAND_MAX/10.) && hypot <= (RAND_MAX/2.)) {
+            break;
+        }
+    }
+
+    // scale the random vector to the caller's specified magnitude
+    f = magnitude / hypot;
+    *x = x_try * f;
+    *y = y_try * f;
+    *z = z_try * f;
+}
+
+double hypotenuse(double x, double y, double z)
+{
+    return sqrt(x*x + y*y + z*z);
+}
+

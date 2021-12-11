@@ -16,3 +16,5 @@ void gnuplot(char *title, char *filename, char *xlabel, char *xrange, char *ylab
 int binary_search(double element, double *array, int max);
 double max_array_val(int max_elem, ...);
 uint64_t microsec_timer(void);
+void random_vector(double magnitude, double * x, double * y, double * z);
+double hypotenuse(double x, double y, double z);

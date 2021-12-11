@@ -1,6 +1,7 @@
-// xxx
-// review comments throughout
-// add help/usage, or comments in the code header
+// usage: ./bb [-t <temp_deg_k] [-m <mass_amu>] [-z]
+//   -t <temp_deg_k> : black body temperature
+//   -m <mass_amu>   : particle mass, this value does not affect the black body spectrum
+//   -z              : display test plot of maxwell-boltzmann distribution
 
 #include "common.h"
 
@@ -37,6 +38,7 @@ double calc_mine2(double f);
 
 void mb_init(void);
 double mb_get_velocity(void);
+double mb_get_energy(void);
 double mb_probability(double velocity);
 void mb_test(void);
 
@@ -99,7 +101,7 @@ int main(int argc, char **argv)
     // calculate the black-body energy density vs frequency using:
     // - Rayleigh–Jeans law
     // - Planck's Law
-    // - My black body calculation
+    // - My black body calculation, versions 1 and 2
     int max = 0;
     double logf;
     double log_freq[1000], rj[1000], planck[1000], mine1[1000], mine2[1000];;
@@ -123,8 +125,9 @@ int main(int argc, char **argv)
     printf("plotting\n");
     FILE *fp = fopen("plot.dat", "w");
     for (int i = 0; i < max; i++) {
-        fprintf(fp, "%0.3f %10.3e %10.3e %10.3e %10.3e\n",
-                log_freq[i], rj[i], planck[i], mine1[i], mine2[i]);
+        double ratio = rj[i] / mine2[i];
+        fprintf(fp, "%0.3f %10.3e %10.3e %10.3e %10.3e # %0.6f\n",
+                log_freq[i], rj[i], planck[i], mine1[i], mine2[i], ratio);
     }
     fclose(fp);
 
@@ -210,7 +213,7 @@ double calc_planck(double f)
     return ((8 * M_PI * h * (f*f*f)) / (C*C*C)) * (1 / (exp((h * f) / KT) - 1));
 }
 
-// -----------------  MY BLACK-BODY  ----------------------------------
+// -----------------  MY BLACK-BODY VERSIONS 1 AND 2  -----------------
 
 double calc_mine1(double f)
 {
@@ -227,26 +230,27 @@ double calc_mine1(double f)
 double calc_mine2(double f)
 {
     #define MAX 500000
-    double mode_density, energy_density, energy, velocity;
-    double sum_energy_quantized, avg_energy_quantized;
-    double hf = h * f * sqrt(2./3.);
+    #define SQRT_TWO_THIRDS 0.8164966
+
+    double mode_density, energy_density;
+    double hf, energy, sum_energy_quantized, avg_energy_quantized;
 
     mode_density = (8 * M_PI * (f*f)) / (C*C*C);
 
+    hf = h * f;
     sum_energy_quantized = 0;
     for (int i = 0; i < MAX; i++) {
-        velocity = mb_get_velocity() * sqrt(2./3.);
-        energy   = (.5 * mass) * (velocity * velocity);
+        energy = mb_get_energy() * SQRT_TWO_THIRDS;
         sum_energy_quantized += floor(energy / hf) * hf;
     }
     avg_energy_quantized = sum_energy_quantized / MAX;
 
-    energy_density = mode_density * avg_energy_quantized;
+    energy_density = mode_density * avg_energy_quantized * SQRT_TWO_THIRDS;
 
     return energy_density;
 }
 
-// -----------------  MAXWELL BOLTZMANN  ------------------------------
+// -----------------  MAXWELL BOLTZMANN DISTRIBUTION  -----------------
 
 // cum_mb: is the cumulative maxwell boltzmann probability array; indexed in delta_v units
 double *cum_mb;      
@@ -267,17 +271,17 @@ void mb_init(void)
         cum_mb[idx] = sum_p;
     }
 
+#if 0
     printf("mb_init:\n");
     printf("  delt_v     = %f\n", delta_v);
     printf("  max_v      = %f\n", max_v);
     printf("  max_cum_mb = %d\n", max_cum_mb);
     printf("  sum_p      = %f\n", sum_p);
-#if 0
-    for (int idx = 0; idx < max_cum_mb; idx++) {
-        printf("  %d  %0.18f\n", idx, cum_mb[idx]);
-    }
-#endif
+    //for (int idx = 0; idx < max_cum_mb; idx++) {
+    //    printf("  %d  %0.18f\n", idx, cum_mb[idx]);
+    //}
     printf("\n");
+#endif
 
     assert(sum_p > 0.9999 && sum_p <= 1);
 }
@@ -300,6 +304,12 @@ double mb_get_velocity(void)
     return idx * delta_v;
 }
 
+double mb_get_energy(void)
+{
+    double v = mb_get_velocity();
+    return 0.5 * mass * (v * v);
+}
+
 double mb_probability(double velocity)
 {
     double velocity_squared = velocity * velocity;
@@ -307,7 +317,7 @@ double mb_probability(double velocity)
 
     probability = pow(mass / (2*M_PI*KT), 1.5) * 
                   (4*M_PI) * velocity_squared *
-                  exp(-mass*(velocity_squared) / (2*KT));
+                  exp(-(mass*velocity_squared) / (2*KT));
     return probability;
 }
 
@@ -360,7 +370,7 @@ void mb_test(void)
     printf("  kt_velocity       = %f\n", kt_velocity);
     sprintf(cmd, "set label 'KT' front at first %0.3f,0 center textcolor rgbcolor 'blue'", kt_velocity);
 
-    sprintf(title, "Maxwell Boltzmann - Mass=%0.0f AMU, T=%0.1f K", KG_TO_AMU(mass), T);
+    sprintf(title, "Maxwell Boltzmann Distribution - Mass=%0.0f AMU, T=%0.1f K", KG_TO_AMU(mass), T);
     gnuplot(title, "test.dat", 
             "Speed m/s", "[*:*]", 
             "Probability", "[*:*]", 
