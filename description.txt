@@ -1,33 +1,47 @@
-===========
-OUTLINE
-===========
+# Black-Body Radiation
 
-Intro
-- purpose to understan origin of Planck constant
-- what is plancks constant
-- why is it important
+An object in thermodynmaic equilibrium with its environment emits electromagnetic 
+radiation; the spectrum of this raiation is defined by the temperature of the object.
+This radiation is called Black Body Radiation.
 
-- I'm not an expert
-- good way to learn is to try to explain
-- computer software might be able to easily reproduce planck's result
+The higher the object's temperature, the higher the frequency of the Black-Body radiation.
 
-References
+TEMPERATURE    DESCRIPTION    FREQ-RANGE     WAVELENGTH-RANGE
 
-What is Black Body Radiation
+IMAGE - SPECTRUM AT 6000K
 
-What was known about light in the 1800s
-- interference patterns
-- maxwell's equations
-- speed of light
-- c = f * wavelength
+## Brief History
 
-Statistical Mechanics
-- what is it
-- history of important discoveries
+1687  Newton's Laws of Motion
+1801  Young Double Slit
+1843  Equipartition of kinetic energy first proposed
+1861  Maxwell's Equations
+1900  Planck's Law , empirically derived, uses quantized energy
+1900  Rayleigh Jeans law, based on thermodynamics
+1905  Einstein conceived of quanta of light, Photoelectric Effect
+1918  Max Planck awarded the Nobel Prize in Physics for his discovery of the enegy quanta
+1921  Albert Einstein awarded the Nobel Prize in Physics for the Photoelectirc Effect
+1926  The name 'Photon' is used to describe Einstein's quanta of light
 
-Equal Partitioning and Boltzmanns Constant
+## Planck Law
+xxxx
+The Planck constant is a fundamental physical constant. It was discovered in 1900
+by Max Planck. Max Planck used this constant in an empirically derived formula for the
+black body radiation spectrum.
 
-Raleigh Jeans Law
+## Raleigh Jeans Law
+xxxx
+
+# Calculating Black-Body Spectrum 
+what i did ....
+
+
+
+## Equipartition theorem
+
+xxxxx
+
+## Raleigh Jeans Law
 - black body chamber
 - gas molecules in the chamber
   - degrees of freedom
@@ -41,7 +55,7 @@ Raleigh Jeans Law
 - comparison graph of RJ, vs actual black body radiation (from Planck's formula)
 - UV Catastrophe
 
-Planck's Law (check this name)
+## Planck's Law (xxx check this name)
 - Planck's goal was to derive a BB formula that agreed with experimental results
 - Did not know about photons or quantum mechanics
   - when was Planck doing this
@@ -72,14 +86,16 @@ Planck's Law (check this name)
 - Plank's constant is fundamental to quantum mechanics; however Planck did not understand
   the significance of his discovery. ... what was he thinking?
 
-My simulation version 1
+## My Black Body Version 1
 - similar to RJ formula but replace KT with quantized value
      KT_quantized = xxxxxxxx
 - show graph
 
-My simulation version 2
+## My Black Body Version 2
 - describe improvement
 - show graph
 - the 2/3 problem
 
-APPENDIX Light Waves in BB Chamber, Mode Density
+## APPENDIX Light Waves in BB Chamber, Mode Density
+
+## APPENDIX References
