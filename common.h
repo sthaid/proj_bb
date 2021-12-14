@@ -10,6 +10,11 @@
 #include <errno.h>
 #include <time.h>
 
+void *probdist_create(double func(double), double start, double end);
+void probdist_destroy(void *hndl_arg);
+double probdist_get_value(void *hndl_arg);
+void probdist_test(void *hndl_arg);
+
 void gnuplot(char *title, char *filename, char *xlabel, char *xrange, char *ylabel, char *yrange, 
              char **extra_cmds, ...);
 

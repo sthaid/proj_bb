@@ -1,3 +1,6 @@
+// xxx
+// https://www.tec-science.com/thermodynamics/kinetic-theory-of-gases/maxwell-boltzmann-distribution/
+
 // usage: ./bb [-t <temp_deg_k] [-m <mass_amu>] [-z]
 //   -t <temp_deg_k> : black body temperature
 //   -m <mass_amu>   : particle mass, this value does not affect the black body spectrum
@@ -37,11 +40,40 @@ double calc_rj(double f);
 double calc_planck(double f);
 double calc_mine(double f);
 
+#if 0
 void mb_init(void);
 double mb_get_velocity(void);
 double mb_get_energy(void);
 double mb_probability(double velocity);
 void mb_test(void);
+#endif
+
+void *hndl;
+
+double mb_get_energy(void)
+{
+    double v = probdist_get_value(hndl);
+    return 0.5 * mass * (v * v);
+}
+
+double mb_probability(double velocity)
+{
+    double velocity_squared = velocity * velocity;
+    double probability;
+
+    probability = pow(mass / (2*M_PI*KT), 1.5) * 
+                  (4*M_PI) * velocity_squared *
+                  exp(-(mass*velocity_squared) / (2*KT));
+    return probability;
+}
+
+double ke_probability(double energy)
+{
+    return 2. / sqrt(M_PI) *
+           pow(KT, -1.5)*
+           sqrt(energy)*
+           exp(-energy/KT);
+}
 
 // -----------------  MAIN  ----------------------------------------------------
 
@@ -91,17 +123,41 @@ int main(int argc, char **argv)
     printf("\n");
 
     // initialize, xxx move
-    mb_init();
+    //hndl = probdist_create(mb_probability, 0, sqrt(2 * (15*KT) / mass));
+    hndl = probdist_create(ke_probability, 0, 20*KT);
+
+    // xxx test
+    #define MAX_TEST 1000000
+    double sum=0;
+    for (int i = 0; i < MAX_TEST; i++) {
+        sum += probdist_get_value(hndl) * (2./3.);
+    }
+#if 0
+    printf("AVG SUM = %0.6f\n", (sum/MAX_TEST));
+    double mean_speed = sqrt(8 * KT / M_PI / mass);
+    printf("MEAN_SP = %0.6f\n", mean_speed);
+    printf("RATIO   = %0.6f\n", (sum/MAX_TEST) / mean_speed);
+#else
+    double avg = sum / MAX_TEST;
+    printf("AVG   = %0.30f\n", avg);
+    printf("KT    = %0.30f\n", KT);
+    printf("RATIO = %0.6f\n", avg/KT);
+#endif
+
+    probdist_test(hndl);
+    exit(1);
 
     // if maxwell-boltzmann test enable then call mb_test; 
     // this test will plot the maxwell-boltzmann velocity distribution and
     // also call mb_get_velocity many times to confirm that mb_get_velocity
     // is returning random velocities in accordance to the maxwell-boltzmann
     // velocity probability distribution
+#if 0
     if (mb_test_enable) {
         mb_test();
         return 0;
     }
+#endif
 
     // assert that both Planck and My black-body calculations agree with
     // Rayleigh-Jeans at low frequency (1 MHz)
@@ -216,7 +272,7 @@ double calc_planck(double f)
     return ((8 * M_PI * h * (f*f*f*f*f)) / (C*C*C*C)) * (1 / (exp((h * f) / KT) - 1));
 }
 
-// -----------------  MY BLACK-BODY VERSIONS 1 AND 2  -----------------
+// -----------------  MY BLACK-BODY -----------------------------------
 
 double calc_mine(double f)
 {
@@ -235,8 +291,79 @@ double calc_mine(double f)
     return energy_density;
 }
 
+#if 0
 // -----------------  MAXWELL BOLTZMANN DISTRIBUTION  -----------------
 
+typedef struct {
+    double  start;
+    double  end;
+    double  incr;
+    int     max;
+    double *cum_prob;
+    double  (*func)(double);
+} handle_t;
+
+void * init(double func(double), double start, double end, double incr)
+{
+    handle_t *hndl;
+    double sum_p = 0;
+    int max = (end - start) / incr;
+
+    hndl = malloc(sizeof(handle_t));
+    hndl->start = start;
+    hndl->end = end;
+    hndl->incr = incr;
+    hndl->max = max;
+    hndl->cum_prob = calloc(max, sizeof(double));
+    hndl->func = func;
+
+    for (int idx = 0; idx < max; idx++) {
+        double p = func(start + idx * incr);
+        sum_p += p * incr;
+        hndl->cum_prob[idx] = sum_p;
+    }
+
+    printf("max = %d\n", max);
+    printf("sum_p = %f\n", sum_p);
+    //assert(sum_p > 0.9999 && sum_p <= 1);
+
+    return hndl;
+
+#if 0
+    printf("mb_init:\n");
+    printf("  delt_v     = %f\n", delta_v);
+    printf("  max_v      = %f\n", max_v);
+    printf("  max_cum_mb = %d\n", max_cum_mb);
+    printf("  sum_p      = %f\n", sum_p);
+    //for (int idx = 0; idx < max_cum_mb; idx++) {
+    //    printf("  %d  %0.18f\n", idx, cum_mb[idx]);
+    //}
+    printf("\n");
+#endif
+
+    //assert(sum_p > 0.9999 && sum_p <= 1);
+}
+
+double get(void *hndl_arg)
+{
+    handle_t *hndl = hndl_arg;
+    double rand_range_0_1;
+    int idx;
+
+    do {
+        rand_range_0_1 = (double)random() / ((double)RAND_MAX + 1);
+    } while (rand_range_0_1 >= hndl->cum_prob[hndl->max-1]);
+
+    idx = binary_search(rand_range_0_1, hndl->cum_prob, hndl->max);
+    if (idx < 0 || idx >= hndl->max-1) {
+        printf("ERROR get, bad idx %d\n", idx);
+        exit(1);
+    }
+
+    return hndl->start + idx * hndl->incr;
+}
+
+#if 0
 // xxx generalize
 // cum_mb: is the cumulative maxwell boltzmann probability array; indexed in delta_v units
 double *cum_mb;      
@@ -368,3 +495,5 @@ void mb_test(void)
     printf("  test done, %0.3f secs\n", (microsec_timer() - start) / 1000000.);
     printf("\n");
 }
+#endif
+#endif
