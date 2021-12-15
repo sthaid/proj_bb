@@ -32,8 +32,8 @@ void *probdist_create(double func(double), double start, double end)
         hndl->cum_prob[idx] = sum_p;
     }
 
-    printf("max = %d\n", max);
-    printf("sum_p = %f\n", sum_p);
+    //printf("max = %d\n", max);
+    //printf("sum_p = %f\n", sum_p);
     assert(sum_p > 0.999 && sum_p <= 1);
 
     return hndl;
@@ -65,21 +65,15 @@ double probdist_get_value(void *hndl_arg)
     return hndl->start + idx * hndl->delta;
 }
 
-//  xxx add test
-
 void probdist_test(void *hndl_arg)
 {
     handle_t *hndl = hndl_arg;
-    //int i, velocity, max_plot_velocity, *histogram, histogram_cnt=0;
     int *histogram, histogram_cnt=0;
     
     FILE *fp;
     char title[100];
-    uint64_t start_us = microsec_timer();
 
     #define MAX_TEST 10000000
-
-    printf("test starting\n");
 
     histogram = calloc(hndl->max, sizeof(int));
 
@@ -93,8 +87,6 @@ void probdist_test(void *hndl_arg)
         histogram[idx]++;
         histogram_cnt++;
     }
-    printf("  MAX_TEST          = %d\n", MAX_TEST);
-    printf("  histogram_cnt     = %d\n", histogram_cnt);
 
     fp = fopen("test.dat", "w");
     double sum_p1=0, sum_p2=0;
@@ -109,17 +101,10 @@ void probdist_test(void *hndl_arg)
     fclose(fp);
 
     if (sum_p1 < 0.999 || sum_p1 > 1.001 || sum_p2 < 0.999 || sum_p2 > 1.001) {
-        printf("  ERROR: sum_p1=%0.20f sum_p2=%0.6f\n", sum_p1, sum_p2);
-        //exit(1);
+        printf("probdist_test ERROR: sum_p1=%0.20f sum_p2=%0.6f\n", sum_p1, sum_p2);
     }
 
-    //double kt_velocity = sqrt(2 * KT / mass);
-    //char cmd[100];
-    //char *extra_gnuplot_cmds[2] = {cmd, NULL};
-    //printf("  kt_velocity       = %f\n", kt_velocity);
-    //sprintf(cmd, "set label 'KT' front at first %0.3f,0 center textcolor rgbcolor 'blue'", kt_velocity);
-
-    sprintf(title, "xxxxxxxx");
+    sprintf(title, "probdist_test");
     gnuplot(title, "test.dat", 
             "Value", "[*:*]", 
             "Probability", "[*:*]", 
@@ -127,10 +112,8 @@ void probdist_test(void *hndl_arg)
             "", "1:2", "green", 
             "", "1:3", "blue",
             NULL, NULL, NULL);
-
-    printf("  test done, %0.3f secs\n", (microsec_timer() - start_us) / 1000000.);
-    printf("\n");
 }
+
 // -----------------  GNUPLOT  ------------------------------------------
 
 void gnuplot(char *title, char *filename, char *xlabel, char *xrange, char *ylabel, char *yrange, 
