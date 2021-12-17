@@ -1,6 +1,3 @@
-// xxx
-// https://www.tec-science.com/thermodynamics/kinetic-theory-of-gases/maxwell-boltzmann-distribution/
-
 // usage: ./bb [-t <temp_deg_k] [-z]
 //   -t <temp_deg_k> : black body temperature
 //   -z              : display test plot of maxwell-boltzmann distribution
@@ -201,19 +198,19 @@ double mb_energy_probability(double energy);
 double calc_mine(double f)
 {
     #define MAX 1000000
-    #define FUDGE_FACTOR .8575
+    #define H_FUDGE_FACTOR .777
 
-    double hf = h * f;
+    double hf = (h*H_FUDGE_FACTOR) * f;
     double sum_energy_quantized = 0;
     double avg_energy_quantized, energy_density;
 
     for (int i = 0; i < MAX; i++) {
-        double energy = probdist_get_value(hndl) * FUDGE_FACTOR;
+        double energy = probdist_get_value(hndl) * (2./3.);
         sum_energy_quantized += floor(energy / hf) * hf;
     }
     avg_energy_quantized = sum_energy_quantized / MAX;
 
-    energy_density = MODE_DENSITY(C/f) * avg_energy_quantized * (.666666666666 / FUDGE_FACTOR);
+    energy_density = MODE_DENSITY(C/f) * avg_energy_quantized;
 
     return energy_density;
 }

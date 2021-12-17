@@ -13,7 +13,8 @@ IMAGE - SPECTRUM AT 6000K
 ## Brief History
 
 1687  Newton's Laws of Motion
-1801  Young Double Slit
+1801  Young Double Slit Experiment
+1834  Ideal Gas Law
 1843  Equipartition of kinetic energy first proposed
 1861  Maxwell's Equations
 1900  Planck's Law , empirically derived, uses quantized energy

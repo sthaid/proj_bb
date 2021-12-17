@@ -15,7 +15,7 @@ void *probdist_create(double func(double), double start, double end)
 {
     handle_t *hndl;
     double sum_p = 0;
-    int max = 10000; //xxx
+    int max = 100000; // this could be an arg
     double delta = (end-start)/max;
 
     hndl = malloc(sizeof(handle_t));
@@ -75,7 +75,7 @@ void probdist_test(void *hndl_arg)
 
     #define MAX_TEST 10000000
 
-    histogram = calloc(hndl->max, sizeof(int));
+    histogram = calloc(hndl->max/30, sizeof(int));
 
     for (int i = 0; i < MAX_TEST; i++) {
         double value = probdist_get_value(hndl_arg);
@@ -84,7 +84,7 @@ void probdist_test(void *hndl_arg)
             printf("ERROR idx=%d max=%d\n", idx, hndl->max);
             continue;
         }
-        histogram[idx]++;
+        histogram[idx/30]++;
         histogram_cnt++;
     }
 
@@ -92,8 +92,8 @@ void probdist_test(void *hndl_arg)
     double sum_p1=0, sum_p2=0;
     for (int i = 0; i < hndl->max; i++) {
         double value = hndl->start + i * hndl->delta;
-        double p1 = (double)histogram[i] / histogram_cnt;
-        double p2 = hndl->func(value) * hndl->delta;  // xxx func name
+        double p1 = (double)histogram[i/30] / histogram_cnt / 30;
+        double p2 = hndl->func(value) * hndl->delta;
         fprintf(fp, "%e %0.9f %0.9f\n", value, p1, p2);
         sum_p1 += p1;
         sum_p2 += p2;
