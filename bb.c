@@ -1,3 +1,4 @@
+// xxx
 // usage: ./bb [-t <temp_deg_k] [-z]
 //   -t <temp_deg_k> : black body temperature
 //   -z              : display test plot of maxwell-boltzmann distribution
@@ -39,35 +40,58 @@ void calc_mine_test(void);
 int main(int argc, char **argv)
 {
     bool test_enable = false;
+    bool plot_rj = false;
+    bool plot_planck = false;
+    bool plot_mine = false;
 
     // got options
-    // -t <temp_deg_k> : temperature
-    // -z              : display test plot of maxwell-boltzmann distribution
     while (true) {
-        int c = getopt(argc, argv, "t:z");
+        int c = getopt(argc, argv, "rpmz");
         if (c == -1) break;
         switch (c) {
-        case 't':   // temperature (degrees K)
-            if (sscanf(optarg, "%lf", &T) != 1 || T < 1 || T > 20000) {
-                printf("ERROR: invalid temperature, 1 to 20000 degrees K expected\n");
-                exit(1);
-            }
-            break;
-        case 'z':
-            test_enable = true;
-            break;
+        case 'r': plot_rj     = true; break;
+        case 'p': plot_planck = true; break;
+        case 'm': plot_mine   = true; break;
+        case 'z': test_enable = true; break;
         default:
             exit(1);
         }
     }
 
+    // if temperature arg provided then scan it
+    if (argc > optind) {
+        if (sscanf(argv[optind], "%lf", &T) != 1 || T < 1 || T > 20000) {
+            printf("ERROR: invalid temperature, 1 to 20000 degrees K expected\n");
+            exit(1);
+        }
+    }
+
+    // if no plots selected then default to all of them
+    if (plot_rj == false && plot_planck == false && plot_mine == false) {
+        plot_rj     = true;
+        plot_planck = true;
+        plot_mine   = true;
+    }
+
+    // must at a minimum choose to plot either mine or planck
+    if (plot_planck == false && plot_mine == false) {
+        printf("ERROR: must at a minimum choose to plot either mine or planck\n");
+        exit(1);
+    }
+
+    // print opts and args
+    printf("T           = %0.1f degrees K\n", T);
+    printf("plot_rj     = %s\n", bool2str(plot_rj));
+    printf("plot_planck = %s\n", bool2str(plot_planck));
+    printf("plot_mine   = %s", bool2str(plot_mine));
+    if (test_enable) {
+        printf("   test_enable");
+    }
+    printf("\n");
+    printf("\n");
+
     // init KT, global variable
     KT = K * T;
-
-    // print params and KT value
-    printf("T  = %0.1f degrees K\n", T);
-    printf("KT = %e joules\n", KT);
-    printf("\n");
 
     // init my black body code
     calc_mine_init();
@@ -102,14 +126,37 @@ int main(int argc, char **argv)
     uint64_t start = microsec_timer();
     for (logfreq = 10; logfreq <= 16; logfreq += .05) {
         double f = pow(10, logfreq);
-        logf[max]   = logfreq;
-        rj[max]     = calc_rj(f);
-        planck[max] = calc_planck(f);
-        mine[max]   = calc_mine(f);
+        logf[max] = logfreq;
+        if (plot_rj)     rj[max]     = calc_rj(f);
+        if (plot_planck) planck[max] = calc_planck(f);
+        if (plot_mine)   mine[max]   = calc_mine(f);
         max++;
     }
     printf("black-body complete, %0.3f secs\n", (microsec_timer() - start) / 1000000.);
     printf("\n");
+
+    // if plot_planck is enabled then scan the planck spectrum to determine
+    // the frequency range, and print it
+    if (plot_planck) {
+        double max_val = max_array_val(max, planck, NULL);
+        double min_freq = -1, max_freq = -1;
+        for (int i = 0; i < max; i++) {
+            if (min_freq == -1 && planck[i] > max_val*.10) {
+                min_freq = pow(10,logf[i]);
+            }
+            if (max_freq == -1 && min_freq != -1 && planck[i] < max_val*.10) {
+                max_freq = pow(10,logf[i]);
+                break;
+            }
+        }
+        printf("PLANCK SPECTURM: T = %0.1lf   "
+               "FREQ_RANGE_THZ = %0.1lf to %0.1lf   "
+               "WAVELEN_RANGE_NM = %0.0lf to %0.0lf\n",
+              T,
+              min_freq/1e12, max_freq/1e12,
+              C/max_freq*1e9, C/min_freq*1e9);
+        printf("\n");
+    }
 
     // print results to file plot.dat, for gnuplot
     printf("plotting\n");
@@ -131,10 +178,10 @@ int main(int argc, char **argv)
             "Log Frequency", "[*:*]", 
             "Energy Density", yrange, 
             extra_gnuplot_cmds(),
-            "Rayleigh–Jeans" , "1:2", "red",
-            "Planck", "1:3", "purple",
-            "Mine", "1:4", "blue",
-            NULL, NULL, NULL);
+            3,
+            !plot_rj     ? NULL : "Rayleigh–Jeans" , "1:2", "red",
+            !plot_planck ? NULL : "Planck", "1:3", "purple",
+            !plot_mine   ? NULL : "Mine", "1:4", "blue");
     printf("\n");
 
     // done

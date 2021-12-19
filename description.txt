@@ -8,11 +8,12 @@ The higher the object's temperature, the higher the frequency of the Black-Body 
 
 TEMPERATURE    DESCRIPTION    FREQ-RANGE     WAVELENGTH-RANGE
 
-IMAGE - SPECTRUM AT 6000K
+IMAGE - SPECTRUM AT 5000K
 
 ## Brief History
 
 1687  Newton's Laws of Motion
+1689  Leibniz, vis viva, Kinetic Energy
 1801  Young Double Slit Experiment
 1834  Ideal Gas Law
 1843  Equipartition of kinetic energy first proposed

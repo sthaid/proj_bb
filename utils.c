@@ -109,15 +109,15 @@ void probdist_test(void *hndl_arg)
             "Value", "[*:*]", 
             "Probability", "[*:*]", 
             NULL,
+            2,
             "", "1:2", "green", 
-            "", "1:3", "blue",
-            NULL, NULL, NULL);
+            "", "1:3", "blue");
 }
 
 // -----------------  GNUPLOT  ------------------------------------------
 
 void gnuplot(char *title, char *filename, char *xlabel, char *xrange, char *ylabel, char *yrange, 
-             char **extra_cmds, ...)
+             char **extra_cmds, int num_plot, ...)
 {
     va_list ap;
     char cmd[1000], *p=cmd;
@@ -134,12 +134,12 @@ void gnuplot(char *title, char *filename, char *xlabel, char *xrange, char *ylab
         p += sprintf(p, "  -e \"%s\"", extra_cmds[i]);
     }
     p += sprintf(p, "  -e \"plot ");
-    va_start(ap, extra_cmds);
-    while (true) {
+    va_start(ap, num_plot);
+    for (int i = 0; i < num_plot; i++) {
         char *title    = va_arg(ap, char*);
-        if (title == NULL) break;
         char *elements = va_arg(ap, char*);
         char *color    = va_arg(ap, char*);
+        if (title == NULL) continue;
         p += sprintf(p, "'%s' using %s title '%s' with lines linewidth 2 linecolor rgb '%s', ",
                      filename, elements, title, color);
     }
