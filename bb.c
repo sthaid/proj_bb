@@ -133,7 +133,7 @@ int main(int argc, char **argv)
             extra_gnuplot_cmds(),
             "Rayleigh–Jeans" , "1:2", "red",
             "Planck", "1:3", "purple",
-            "mine", "1:4", "blue",
+            "Mine", "1:4", "blue",
             NULL, NULL, NULL);
     printf("\n");
 
@@ -230,10 +230,10 @@ void calc_mine_test(void)
     for (int i = 0; i < MAX_TEST; i++) {
         sum += probdist_get_value(hndl);
     }
-    double avg = sum / MAX_TEST;
-    printf("- AVG   = %0.30f\n", avg);
-    printf("- KT    = %0.30f\n", KT);
-    printf("- RATIO = %0.6f\n", avg/KT);
+    double avg_energy = sum / MAX_TEST;
+    printf("- AVG ENERGY = %0.30f\n", avg_energy);
+    printf("- 3/2 KT     = %0.30f\n", 1.5 * KT);
+    printf("- RATIO      = %0.6f\n", avg_energy/(1.5*KT));
 
     probdist_test(hndl);
 
