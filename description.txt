@@ -1,16 +1,26 @@
 # Black-Body Radiation
 
+In this project I attempt to reproduce the Planck Black Body spectrum using a computer simulation.
+
+## Introduction
+
 An object in thermodynmaic equilibrium with its environment emits electromagnetic 
 radiation; the spectrum of this raiation is defined by the temperature of the object.
 This radiation is called Black Body Radiation.
 
 The higher the object's temperature, the higher the frequency of the Black-Body radiation.
 
-TEMPERATURE    DESCRIPTION    FREQ-RANGE     WAVELENGTH-RANGE
+TEMPERATURE    DESCRIPTION                     FREQ-RANGE-THz     WAVELENGTH-RANGE-NM
+2.7            Cosmic Microwave Background      .1  -    .7       500000  -  3400000
+300            Room Temperature                 10  -    80         4000  -    30000
+5000           Surface of Sun                  160  -  1300          240  -     1900
 
-IMAGE - SPECTRUM AT 5000K
+XXX IMG planck_5000.png
 
 ## Brief History
+
+This is a bried history of the progression of discoveries that led to the dicovery
+of Planck's Law and Planck's Constant.
 
 1687  Newton's Laws of Motion
 1689  Leibniz, vis viva, Kinetic Energy
@@ -25,8 +35,55 @@ IMAGE - SPECTRUM AT 5000K
 1921  Albert Einstein awarded the Nobel Prize in Physics for the Photoelectirc Effect
 1926  The name 'Photon' is used to describe Einstein's quanta of light
 
+In the late 1600s, Newton and Leibniz discovered the laws of motion and conservation
+of kinetic energy. These discoveries provided the ability to predict the result of an
+elastic collision of 2 objects, given that you know the objects masses and initial velocities.
+
+In 1801 Thomas Young discovered that light is a wave, using a technique similar to the modern
+double slit experiment. Prior to this, light was believed to be made of tiny particles called
+corpuscles. In 1818 the wave theory of light replaced the corpuscle theory when an experiment
+observed the Poisson Spot, which could only be explained if light is a wave. A century later,
+Einstein discovered that light is both a particle and a wave.
+
+In 1834 the Ideal Gas Law was coneived. This law assumes that a gas is made up of many tiny
+particles that collide elastically. Newton/Leibniz could predict the outcome of individual
+collisions. The Ideal Gas Law instead predicts the average behaviour of the entire volume 
+of gas. The modelling of large number of particles is known as Statistical Mechanics.
+
+In 1843 xxx equipartion
+
+In 1861 Maxwell built on the work of Gauss, Faraday and Ampere, and published Maxwell's Equations.
+Maxwell's equations show that light waves propogate due to an oscillation between electric and 
+mangetic fields. The speed of light propogation is related to the Vacuum Permittivity constants.
+These constants define the ability of a vacuum to hold an electric field and a magnetic field.
+
+In 1900 Maxwell Planck discovered a formula for the black body spectrum. At the time thee were
+accurate experimental measurements of the Black Body spectrum. Planck used empirical techniques
+to derive the formula, and Planck did not recognize the significance of his accomplishment at
+the time. Planck was later awarded the Nobel Prize in Phyiscs for his discovery of the energy
+quanta. Planck's Black Body spectrum formula was derived by assuming that the energy of the 
+oscillators (that create the light waves) can have energy values only in minimla increments.
+This is the quantization of energy. The Planck formula for the black body spectrum defines a new
+physical constant 'h' (the Planck constant), which defines the value of the minimal energy 
+increment.
+
+In 1905 Albert Einstein conceived of the quanta of light, as a result of his work on the
+Photoelectric Effect. Einstein was later awared the Nobel Prize in Physics for this. This 
+quanta of light energy was equivalent to the quanta of energy that Planck had proposed. However
+Einstein showed that it is light that is quantized; Planck had earlier thought it was
+the oscaillator energy that was quantized.
+
+In 1926, the name 'Photon' is first used to describe the Einstein quanta of light.
+
+The Planck Constant 'h', is very important and widely used in quantum mechanics.
+
+
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
 ## Planck Law
-xxxx
+
 The Planck constant is a fundamental physical constant. It was discovered in 1900
 by Max Planck. Max Planck used this constant in an empirically derived formula for the
 black body radiation spectrum.
@@ -36,8 +93,6 @@ xxxx
 
 # Calculating Black-Body Spectrum 
 what i did ....
-
-
 
 ## Equipartition theorem
 
