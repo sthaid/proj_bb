@@ -50,7 +50,18 @@ particles that collide elastically. Newton/Leibniz could predict the outcome of 
 collisions. The Ideal Gas Law instead predicts the average behaviour of the entire volume 
 of gas. The modelling of large number of particles is known as Statistical Mechanics.
 
-In 1843 xxx equipartion
+In 1843 Equipartition of kinetic energy first proposed. In statistical mechanics this 
+relates system temperature to the average kinetic for each degree of freedom. For example, 
+consider many pucks on an Air Hockey Table, where the sides of the table vibrate to impart
+energy to the pucks. In a short time, the pucks will reach an equilibrium state. The pucks
+have 2 degrees of freedom, they can move in either the X or Y direction. The average energy
+of the pucks due to their motion in the X direction will be equal to the average energy of 
+the pucks in the Y direction. For a gas of molecules, the degrees of freedom are: motion in
+the X,Y,Z direction; rotation about the X,Y,Z axis; and longitudinal osciallations of the
+atoms that make up the moulecules. Each of these degrees of freedom will have the same
+average energy. The average energy for each degree of freedom (aka mode) is the Boltzmann
+constant times the temperature of the gas (Kb * T). Gasses that comprised of molecules that have more
+degrees of freedom will have a higher capacity to store thermal energy.
 
 In 1861 Maxwell built on the work of Gauss, Faraday and Ampere, and published Maxwell's Equations.
 Maxwell's equations show that light waves propogate due to an oscillation between electric and 
@@ -66,6 +77,12 @@ oscillators (that create the light waves) can have energy values only in minimla
 This is the quantization of energy. The Planck formula for the black body spectrum defines a new
 physical constant 'h' (the Planck constant), which defines the value of the minimal energy 
 increment.
+
+In 1900  The Rayleigh Jeans law made use of the Equipartion therom to predict the Black Body
+spectrum. Their approach starts by assuming that light waves are in thermodynamic equilibrium with
+a chamber containing these waves. Rayleigh and Jeans calculated the number of modes of light
+waves that could be contained in a chamber, vs the frequency of the light waves. According to the
+Equipartion Therom, each mode would have Kb * T energy. So the 
 
 In 1905 Albert Einstein conceived of the quanta of light, as a result of his work on the
 Photoelectric Effect. Einstein was later awared the Nobel Prize in Physics for this. This 
