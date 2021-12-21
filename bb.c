@@ -1,7 +1,9 @@
 // xxx
-// usage: ./bb [-t <temp_deg_k] [-z]
-//   -t <temp_deg_k> : black body temperature
-//   -z              : display test plot of maxwell-boltzmann distribution
+// usage: ./bb [-rpmz] [temp_deg_k]
+//   -r: plot Rayleigh-Jeans 
+//   -p: plot Planck
+//   -m: plot Mine
+//   -z: test plot of maxwell-boltzmann energy distribution
 
 #include "common.h"
 
@@ -20,7 +22,7 @@
 // variables
 //
 
-double T = 5000;
+double T = 5800;   // black body temperature of the sun
 double KT;
 
 //
@@ -29,9 +31,9 @@ double KT;
 
 char **extra_gnuplot_cmds(void);
 
-double calc_rj(double f);
-double calc_planck(double f);
-double calc_mine(double f);
+double calc_rj(double wvlen);
+double calc_planck(double wvlen);
+double calc_mine(double wvlen);
 void calc_mine_init(void);
 void calc_mine_test(void);
 
@@ -102,9 +104,9 @@ int main(int argc, char **argv)
     // check that both Planck and My black-body calculations agree with
     // Rayleigh-Jeans at low frequency (1 MHz); print warning if check fails
     double tst_freq   = 1000000;
-    double tst_rj     = calc_rj(tst_freq);
-    double tst_planck = calc_planck(tst_freq);
-    double tst_mine   = calc_mine(tst_freq);
+    double tst_rj     = calc_rj(C/tst_freq);
+    double tst_planck = calc_planck(C/tst_freq);
+    double tst_mine   = calc_mine(C/tst_freq);
     if ((tst_rj/tst_planck < 0.995 || tst_rj/tst_planck > 1.005) ||
         (tst_rj/tst_mine < 0.995 || tst_rj/tst_mine > 1.005))
     {
@@ -123,13 +125,17 @@ int main(int argc, char **argv)
     static double logf[10000], rj[10000], planck[10000], mine[10000];;
 
     printf("black-body starting\n");
+    #define START 10
+    #define END   16
+    #define INCR .05 
     uint64_t start = microsec_timer();
-    for (logfreq = 10; logfreq <= 16; logfreq += .05) {
+    for (logfreq = START; logfreq <= END; logfreq += INCR) {
         double f = pow(10, logfreq);
+        double wvlen = C/f;
         logf[max] = logfreq;
-        if (plot_rj)     rj[max]     = calc_rj(f);
-        if (plot_planck) planck[max] = calc_planck(f);
-        if (plot_mine)   mine[max]   = calc_mine(f);
+        if (plot_rj)     rj[max]     = calc_rj(wvlen);
+        if (plot_planck) planck[max] = calc_planck(wvlen);
+        if (plot_mine)   mine[max]   = calc_mine(wvlen);
         max++;
     }
     printf("black-body complete, %0.3f secs\n", (microsec_timer() - start) / 1000000.);
@@ -223,18 +229,21 @@ char **extra_gnuplot_cmds(void)
 
 // -----------------  RAYLEIGH-JEANS BLACK-BODY  ----------------------
 
-#define MODE_DENSITY(wvlen) (8 * M_PI * pow((wvlen), -4))
+// the "(8 * M_PI / pow((wvlen),4)" term is from here, and allowing for two polarizations
+//   http://www.reading.ac.uk/physicsnet/units/3/3pha4/Lectures/l1.pdf
+// the "(C / (4 * M_PI))" is for units conversion
+#define MODE_DENSITY(wvlen) ((8 * M_PI / pow((wvlen),4)) * (C / (4 * M_PI)))
 
-double calc_rj(double f)
+double calc_rj(double wvlen)
 {
-    return MODE_DENSITY(C/f) * KT;
+    return MODE_DENSITY(wvlen) * KT;
 }
 
 // -----------------  PLANCK BLACK-BODY--------------------------------
 
-double calc_planck(double f)
+double calc_planck(double wvlen)
 {
-    return ((8 * M_PI * h * (f*f*f*f*f)) / (C*C*C*C)) * (1 / (exp((h * f) / KT) - 1));
+    return ((2 * h * C * C) / pow(wvlen, 5)) * (1 / (exp((h * C) / (wvlen * KT)) - 1));
 }
 
 // -----------------  MY BLACK-BODY -----------------------------------
@@ -242,14 +251,14 @@ double calc_planck(double f)
 void *hndl;
 double mb_energy_probability(double energy);
 
-double calc_mine(double f)
+double calc_mine(double wvlen)
 {
     #define MAX 1000000
     #define H_FUDGE_FACTOR .777
 
-    double hf = (h*H_FUDGE_FACTOR) * f;
+    double hf = (h*H_FUDGE_FACTOR) * (C/wvlen);
     double sum_energy_quantized = 0;
-    double avg_energy_quantized, energy_density;
+    double avg_energy_quantized;
 
     for (int i = 0; i < MAX; i++) {
         double energy = probdist_get_value(hndl) * (2./3.);
@@ -257,9 +266,7 @@ double calc_mine(double f)
     }
     avg_energy_quantized = sum_energy_quantized / MAX;
 
-    energy_density = MODE_DENSITY(C/f) * avg_energy_quantized;
-
-    return energy_density;
+    return MODE_DENSITY(wvlen) * avg_energy_quantized;
 }
 
 void calc_mine_init(void)
@@ -267,24 +274,29 @@ void calc_mine_init(void)
     hndl = probdist_create(mb_energy_probability, 0, 20*KT);
 }
 
-// xxx comments
 void calc_mine_test(void)
 {
     printf("calc_mine_test ...\n");
 
+    // the probdist_get_value returns a random energy value that conforms to the
+    // maxwell-boltzmann energy probability distribution; averaging these values should
+    // result in 3/2 KT
     #define MAX_TEST 1000000
     double sum=0;
     for (int i = 0; i < MAX_TEST; i++) {
         sum += probdist_get_value(hndl);
     }
     double avg_energy = sum / MAX_TEST;
+
+    // print result, so user can confirm the avg_energy is 3/2 KT
     printf("- AVG ENERGY = %0.30f\n", avg_energy);
     printf("- 3/2 KT     = %0.30f\n", 1.5 * KT);
     printf("- RATIO      = %0.6f\n", avg_energy/(1.5*KT));
-
-    probdist_test(hndl);
-
     printf("\n");
+
+    // probdist_test will plot both the distribution and the random values
+    // (those returned by probdist_get_value), which should conform to the distribtuion
+    probdist_test(hndl);
 }
 
 double mb_energy_probability(double energy)
@@ -295,9 +307,7 @@ double mb_energy_probability(double energy)
            exp(-energy/KT);
 }
 
-// -----------------  NOT USED  ---------------------------------------
-
-#if 0
+#if 0   // no longer used
 double mb_velocity_probability(double velocity)
 {
     double velocity_squared = velocity * velocity;

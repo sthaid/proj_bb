@@ -13,9 +13,13 @@ The higher the object's temperature, the higher the frequency of the Black-Body 
 TEMPERATURE    DESCRIPTION                     FREQ-RANGE-THz     WAVELENGTH-RANGE-NM
 2.7            Cosmic Microwave Background      .1  -    .7       500000  -  3400000
 300            Room Temperature                 10  -    80         4000  -    30000
-5000           Surface of Sun                  160  -  1300          240  -     1900
+5800           Surface of Sun                  200  -  1400          210  -     1500
+
+visible light xxx comparison
 
 XXX IMG planck_5000.png
+
+xxx temp of sun
 
 ## Brief History
 
@@ -72,17 +76,19 @@ In 1900 Maxwell Planck discovered a formula for the black body spectrum. At the 
 accurate experimental measurements of the Black Body spectrum. Planck used empirical techniques
 to derive the formula, and Planck did not recognize the significance of his accomplishment at
 the time. Planck was later awarded the Nobel Prize in Phyiscs for his discovery of the energy
-quanta. Planck's Black Body spectrum formula was derived by assuming that the energy of the 
-oscillators (that create the light waves) can have energy values only in minimla increments.
+quanta. Planck's Black Body spectrum formula (Planck's Law) was derived by assuming that the 
+oscillators (that create the light waves) can have energy values only in minimal increments.
 This is the quantization of energy. The Planck formula for the black body spectrum defines a new
 physical constant 'h' (the Planck constant), which defines the value of the minimal energy 
-increment.
+increment. Planck's Law was developed without making use of the Rayleigh-Jeans Law.
 
-In 1900  The Rayleigh Jeans law made use of the Equipartion therom to predict the Black Body
+In 1900  The Rayleigh-Jeans law made use of the Equipartion therom to predict the Black Body
 spectrum. Their approach starts by assuming that light waves are in thermodynamic equilibrium with
-a chamber containing these waves. Rayleigh and Jeans calculated the number of modes of light
+a chamber containing the waves. Rayleigh and Jeans calculated the number of modes of light
 waves that could be contained in a chamber, vs the frequency of the light waves. According to the
-Equipartion Therom, each mode would have Kb * T energy. So the 
+Equipartion Therom, each mode would have Kb * T energy. The Rayleigh-Jeans Law for black body
+spectral radiance says that the Spectral Radiance at frequency 'f' is Kb * T *  the number of
+light wave modes at that frequency.
 
 In 1905 Albert Einstein conceived of the quanta of light, as a result of his work on the
 Photoelectric Effect. Einstein was later awared the Nobel Prize in Physics for this. This 
@@ -99,13 +105,68 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
-## Planck Law
+## Black Body Spectrum
+
+Formulas for the black body spectrum come in two forms, where the spectral radiance is either:
+- Power per Unit-Area per Unit-Frequency, or
+- Power per Unit-Area per Unit-Wavelength.
+
+I use the 'Power per Unit-Area per Unit-Wavelength', because this generates a spectrum that shows
+the peak intensity for T=5800 (the surface of the sun) to be at center of the visible light spectrum.
+
+## Planck's Law
+
+https://en.wikipedia.org/wiki/Planck%27s_law
+
+  Spectral Radiance = 
+     ((2 * h * C * C) / pow(wvlen, 5)) * (1 / (exp((h * C) / (wvlen * KT)) - 1))
+
+## Rayleigh-Jeans Law
+
+https://en.wikipedia.org/wiki/Rayleigh%E2%80%93Jeans_law
+   SR  = 2 * C * KT / wvlen^4
+
+    SR =   (C/(4*M_PI))  *                           (1)
+           (8 * M_PI * pow((wvlen), -4))             (2)
+           KT                                        (3)
+
+Cube shaped Chamber, with conductive reflecting walls
+waves of light must have zero electric field at walls of chamber.
+Nice description of how mode density is determined is here
+http://www.reading.ac.uk/physicsnet/units/3/3pha4/Lectures/l1.pdf
+
+Problem, as the wavelen becomes smaller (larger frequency) the spectral radiance 
+increases to infinity. The Ultraviolet catastrophe.
+
+XXX include plot_rj_vs_planck.png
+
+## Mine
+
+Use RJ, modified to include concept of quantization of the mode energies
+
+Fixed value of kt for all mode at all frequencies
+- for low frequencies hf is much smaller than KT
+- for higher frequencies hf becomes similar in value to KT, and show examples of quantization
+
+How the algorithm works
+
+xxx image
+
+
+
+At low frequencies  hf is small KT is fixed
+
+
+## The Planck Constant
 
 The Planck constant is a fundamental physical constant. It was discovered in 1900
 by Max Planck. Max Planck used this constant in an empirically derived formula for the
-black body radiation spectrum.
+black body radiation spectrum. This formula is called Planck's Law.
 
-## Raleigh Jeans Law
+
+Planck's Law incorporates the concept of energy quanitzation. 
+
+## Rayleigh Jeans Law
 xxxx
 
 # Calculating Black-Body Spectrum 
