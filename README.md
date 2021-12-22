@@ -22,6 +22,22 @@ The wavelength of visible light ranges from 380 nm (violet) to 700 nm (red).
 
 ## Brief History
 
+```
+Timeline summary:
+1687  Newton's Laws of Motion
+1689  Leibniz, vis viva, Kinetic Energy
+1801  Young Double Slit Experiment
+1834  Ideal Gas Law
+1843  Equipartition of kinetic energy first proposed
+1861  Maxwell's Equations
+1900  Planck's Law , empirically derived, uses quantized energy
+1900  Rayleigh Jeans law, based on thermodynamics
+1905  Einstein conceived of quanta of light, Photoelectric Effect
+1918  Max Planck awarded the Nobel Prize in Physics for his discovery of the enegy quanta
+1921  Albert Einstein awarded the Nobel Prize in Physics for the Photoelectirc Effect
+1926  The name 'Photon' is used to describe Einstein's quanta of light
+```
+
 This is a bried history of the progression of discoveries that led to the dicovery
 of Planck's Law and Planck's Constant.
 
@@ -89,26 +105,6 @@ Planck had earlier thought it was the oscaillator energy that was quantized.
 
 In 1926, the name 'Photon' is first used to describe the Einstein quanta of light.
 
-```
-Timeline summary:
-1687  Newton's Laws of Motion
-1689  Leibniz, vis viva, Kinetic Energy
-1801  Young Double Slit Experiment
-1834  Ideal Gas Law
-1843  Equipartition of kinetic energy first proposed
-1861  Maxwell's Equations
-1900  Planck's Law , empirically derived, uses quantized energy
-1900  Rayleigh Jeans law, based on thermodynamics
-1905  Einstein conceived of quanta of light, Photoelectric Effect
-1918  Max Planck awarded the Nobel Prize in Physics for his discovery of the enegy quanta
-1921  Albert Einstein awarded the Nobel Prize in Physics for the Photoelectirc Effect
-1926  The name 'Photon' is used to describe Einstein's quanta of light
-```
-
-XXX examples
-
-[GitHub Pages](https://pages.github.com/)
-
 ## Black Body Spectrum
 
 An object in thermodynmaic equilibrium with its environment emits electromagnetic 
@@ -126,33 +122,47 @@ the visible light spectrum.
 
 ## Planck's Law
 
-https://en.wikipedia.org/wiki/Planck%27s_law
-  SpectralRadiance = 
-     ((2 * h * C * C) / pow(wvlen, 5)) * (1 / (exp((h * C) / (wvlen * KT)) - 1))
+Reference: https://en.wikipedia.org/wiki/Planck%27s_law
+```
+                       2 h c^2          1
+    SpectralRadiance = ------- *  -------------------
+                       wvlen^5           h c 
+                                  e^ (----------)  - 1
+                                      wvlen * KT
+```
 
 ## Rayleigh-Jeans Law
 
-https://en.wikipedia.org/wiki/Rayleigh%E2%80%93Jeans_law
-    SR  = 2 * C * KT / wvlen^4
+Reference: https://en.wikipedia.org/wiki/Rayleigh%E2%80%93Jeans_law
+```
+                        2 c KT
+    SpectralRadiance = ---------
+                        wvlen^4
+```
 
-Code 
-    SR  = MODE_DEN * KT
-    where MODE_DEN is xxxx * xxxxx
+The bb.c calc_rj() function:
+```
+                             8 * π       c
+    MODE_DENSITY(wvlen) =  --------- * --------
+                           wvlen^4      4 * π
 
- #define MODE_DENSITY(wvlen) ((8 * M_PI / pow((wvlen),4)) * (C / (4 * M_PI)))
-  first term is from
-  second is for units conversion and to make the resulting radiance spectrum match
+    SpectralRadiance = MODE_DENSITY(wvlen) * KT
 
-The following gives some insight to how MODE_DENSITY is determined
-xxxx ... more work ....
-Cube shaped Chamber, with conductive reflecting walls
-waves of light must have zero electric field at walls of chamber.
-Nice description of how mode density is determined is here
-http://www.reading.ac.uk/physicsnet/units/3/3pha4/Lectures/l1.pdf
+    The first term in MODE_DENSITY is taken from the mode density derivation provided here
+    http://www.reading.ac.uk/physicsnet/units/3/3pha4/Lectures/l1.pdf, 
+    and allowing for 2 polarizations.
 
-RJ agrees with experiment and Planck at low frequencies; however, at high frequencies
-RJ diverges dramatically from Planck, and RJ goes to infinity. This was called the
-Ultraviolet Catastrophe.
+    The second term in MODE_DENSITY is a units conversion factor, so that the
+    calc_rj() function in bb.c returns the correct value.
+```
+
+The spectral radiance calculated using the Rayleigh-Jeans law agrees with experiment and Planck 
+at low frequencies; however, at high frequencies Rayleigh-Jeans diverges dramatically from Planck. 
+RJ goes to infinity as wavelength goes to zero. This was called the Ultraviolet Catastrophe.
+
+![plot-rj-vs-planck.png](/assets/plot_rj_vs_planck.png)
+
+xxxxxxxxxxxxxxxx left off here xxxxxxxxxxxxxxxxxx
 
 ## Solving the Ultraviolet Catastrophe
 
@@ -258,3 +268,8 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ## APPENDIX Light Waves in BB Chamber, Mode Density
 
 ## APPENDIX References
+XXX examples
+[GitHub Pages](https://pages.github.com/)
+
+pi = u03c0
+http://www.reading.ac.uk/physicsnet/units/3/3pha4/Lectures/l1.pdf
