@@ -162,26 +162,22 @@ RJ goes to infinity as wavelength goes to zero. This was called the Ultraviolet 
 
 ![plot-rj-vs-planck.png](/assets/plot_rj_vs_planck.png)
 
-xxxxxxxxxxxxxxxx left off here xxxxxxxxxxxxxxxxxx
-
 ## Solving the Ultraviolet Catastrophe
 
-Solved by energy quantization.
+The RJ Law's Ultraviolet Catastrophe is resolved by incorporating energy quantization.
 
-Fixed value of kt for all mode at all frequencies
-- for low frequencies hf is much smaller than KT
-- for higher frequencies hf becomes similar in value to KT, and show examples of quantization
+Recall that the mode density is a function of wavelength (or frequency), and each mode
+has a constant energy content equal to KT.
 
-At low frequencies, hf is much smaller than KT. Thus rounding down to a multiple of hf makes just
-a small change. For example, suppose KT=1000, and a random energy value conforming to this
-temperature is 977.5, and assuming hf=2; then the 977.5 is rounded down (quantized) to a multiple of 
-2, and it's new value becomes 976.
-
-At high frequencies, again using KT=1000 and the random energy value of 977.5; but now at the higher
-frequency suppose hf=500; this time the 977.5 will be rounded down (quantized) to a multiple of
-500, and it's new value becomes 500.
+For example, assuming KT=1000 ...
+* Low Frequency, hf is much smaller than KT: Rounding down to a multiple of hf makes just a small change. For example, KT=1000, and a random energy value conforming to this KT could be 977.5. Assuming the low frequency hf value is 2; then the 977.5 is rounded down (quantized) to a multiple of 2. It's value changes from 977.5 to 976.
+* High Frequency, hf is close to KT: Rounding down to a multiple of hf makes a large change. For example, KT=1000, and a random energy value conforming to this KT could be 977.5. Assuming the high frequency hf value is 500; then the 977.5 is rounded down (quantized) to a multiple of 500. It's value changes from 977.5 to 500.
 
 ## My Black Body Calculation
+
+xxxxxxxxxxxxxxxx left off here xxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxx left off here xxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxx left off here xxxxxxxxxxxxxxxxxx
 
 This program attempts to incorporate energy quantization into the Rayleigh-Jeans Law.
 
@@ -202,8 +198,7 @@ Mine vs Planck.
   improving the result
 - And I have no idea why the .777 fudge factor for the value of h is needed.
 
-xxx image here
-
+![plot-rj-planck-mine.png](/assets/lot_rj_planck_mine.png)
 
 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -273,3 +268,5 @@ XXX examples
 
 pi = u03c0
 http://www.reading.ac.uk/physicsnet/units/3/3pha4/Lectures/l1.pdf
+
+spellcheck
