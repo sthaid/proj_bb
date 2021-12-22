@@ -198,7 +198,7 @@ Mine vs Planck.
   improving the result
 - And I have no idea why the .777 fudge factor for the value of h is needed.
 
-![plot-rj-planck-mine.png](/assets/lot_rj_planck_mine.png)
+![plot-rj-planck-mine.png](/assets/plot_rj_planck_mine.png)
 
 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
