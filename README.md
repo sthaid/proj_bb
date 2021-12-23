@@ -23,7 +23,6 @@ The wavelength of visible light ranges from 380 nm (violet) to 700 nm (red).
 ## Brief History
 
 ```
-Timeline summary:
 1687  Newton's Laws of Motion
 1689  Leibniz, vis viva, Kinetic Energy
 1801  Young Double Slit Experiment
@@ -37,9 +36,6 @@ Timeline summary:
 1921  Albert Einstein awarded the Nobel Prize in Physics for the Photoelectirc Effect
 1926  The name 'Photon' is used to describe Einstein's quanta of light
 ```
-
-This is a bried history of the progression of discoveries that led to the dicovery
-of Planck's Law and Planck's Constant.
 
 In the late 1600s, Newton and Leibniz discovered the laws of motion and conservation
 of kinetic energy. These discoveries provided the ability to predict the result of an
@@ -93,7 +89,7 @@ waves that could be contained in a chamber, vs the frequency of the light waves.
 Equipartion Therom, each mode would have Kb * T energy. The Rayleigh-Jeans Law for black body
 spectral radiance says that the Spectral Radiance at frequency 'f' is Kb * T *  the number of
 light wave modes at that frequency. This equation yields results that are very close to 
-experiment and Planck for low frequencies; hover the equation is way off at high frequencies, and
+experiment and Planck for low frequencies; however the equation is way off at high frequencies, and
 goes to infinity as the frequency increases. This problem was called the Ultraviolet Catastrophe.
 The Ultraviolet Catastrophe was later resolved by taking into account the quantization of energy.
 
@@ -175,20 +171,17 @@ For example, assuming KT=1000 ...
 
 ## My Black Body Calculation
 
-xxxxxxxxxxxxxxxx left off here xxxxxxxxxxxxxxxxxx
-xxxxxxxxxxxxxxxx left off here xxxxxxxxxxxxxxxxxx
-xxxxxxxxxxxxxxxx left off here xxxxxxxxxxxxxxxxxx
-
-This program attempts to incorporate energy quantization into the Rayleigh-Jeans Law.
+The bb program adds energy quantization to the Rayleigh-Jeans Law.
 
 The spectral radiance for a given wavlength is computed as follows:
-  an energy value conforming to the mbenergy dist is obtained many times,
-  each time this energy value is quantized (rounded down to a multiple of hf)
-  the average of these quantized energy values is calculated
-  this average quantized energy value is then multiplied by the MODE_DENSITY to obtain the Spectral Radiance
+- an energy value conforming to the maxwell-boltzmann energy distribution is obtained many times,
+- each time this energy value is quantized by rounding down to a multiple of hf
+- the average of these quantized energy values is calculated
+- this average quantized energy value is then multiplied by the MODE_DENSITY to obtain the Spectral Radiance
 
-The results in the following image show good agreement between Planck and Mine; however:
-- to get this agreement I had to use a value of h that is .777 the real value of h
+The plots of Spectral Radiance vs Log Frequency for the Rayleigh-Jeans law, the Planck Law, and 
+my calculation are shown below. My calculation is a close match to Planck, however:
+- to get this agreement I had to use a value of h that is .777 of the real value of h
 - their is a small diffeence between the plots of Mine vs Placnk
 
 I have been unable to account for the .777 or the small difference between the plots of 
@@ -196,77 +189,57 @@ Mine vs Planck.
 - The small difference could be the result of the numerical methods used, however
   I have attempted to increase the accuracy, for example by averaging more samples, without 
   improving the result
-- And I have no idea why the .777 fudge factor for the value of h is needed.
+- I have no idea why the .777 fudge factor for the value of h is needed.
 
 ![plot-rj-planck-mine.png](/assets/plot_rj_planck_mine.png)
 
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-
-## Raleigh Jeans Law
-- black body chamber
-- gas molecules in the chamber
-  - degrees of freedom
-- ligtt waves in the chamber
-  - constrained to zero electric field at walls
-  - how many modes, (mode_density),  refer to Appendix for details
-- formula
-  - each mode has KT energy
-  - what's good about this formula
-  - what's wrong
-- comparison graph of RJ, vs actual black body radiation (from Planck's formula)
-- UV Catastrophe
-
-## Planck's Law (xxx check this name)
-- Planck's goal was to derive a BB formula that agreed with experimental results
-- Did not know about photons or quantum mechanics
-  - when was Planck doing this
-  - when were photons discovered
-  - when was quantum mechanics discovered
-- Difficult problem for Planck, how long did it take
-- Planck discovered that if he assumed that light waves can only have discrete energy values
-  then he derived this formula for black body radiation
-     formula
-  This formula has a constant 'h', which value he set to make the formula agree with experiment.
-  This 'h' is now known as Planck's constant.
-- These discrete energy values are proportional to the frequency of the light wave, (h*f).
-  Provide Examples for infrared and UV
-- How does discrete energy values both preserve RJ Law at low frequencies, and resolve the
-  problem with RJ Law (Ultraviolet Catastrophe) at high frequency. Review:
-   - each mode, regardless of the light frequency, has energy KT
-   - the mode density is proportional to frequency squared
-   -    RJ(f) proportionalto freq^2 * KT
- For Planck's solution at low frequencies
-    hf is much smaller than KT, so the amount of energy quantization is small,
-      for example, suppose KT=91 and at a low frequencey hf=2 (allowed energy values of
-      0,2,4,6,8,...88,90,92,..); then KT will be quantized to 90 (a small cahange from 91).
- For Planck's solution at high frequencies
-    hf is close to KT, so the amount of energy quantization can be large,
-      for example, suppose KT=91 and at a high frequencey hf=50 (meaning that energy
-      can take discrete values of 0, 50, 100, 150, ...; then KT will be quantized to 50
-      (a large change from 91)
-- Plank's constant is fundamental to quantum mechanics; however Planck did not understand
-  the significance of his discovery. ... what was he thinking?
-
-## My Black Body Version 1
-- similar to RJ formula but replace KT with quantized value
-     KT_quantized = xxxxxxxx
-- show graph
-
-## My Black Body Version 2
-- describe improvement
-- show graph
-- the 2/3 problem
-
-## APPENDIX Light Waves in BB Chamber, Mode Density
-
 ## APPENDIX References
+
+[Planck's law](https://en.wikipedia.org/wiki/Planck%27s_law)
+[xxx](https://en.wikipedia.org/wiki/Rayleigh%E2%80%93Jeans_law)
+[xxx](https://en.wikipedia.org/wiki/Equipartition_theorem)
+[xxx](https://en.wikipedia.org/wiki/Boltzmann_constant)
+[xxx](https://en.wikipedia.org/wiki/Maxwell%E2%80%93Boltzmann_distribution)
+
+
+xxxxxxxxxxxxxxxxxxxxxxxxxx
+
+https://www.tec-science.com/thermodynamics/kinetic-theory-of-gases/maxwell-boltzmann-distribution/
+  contains section "Maxwell-Boltzmann kinetic energy distribution"
+Radiation in a Cavity (Rayleigh, Planck (1900))
+- http://www.reading.ac.uk/physicsnet/units/3/3pha4/Lectures/l1.pdf
+    mode density derivation
+
+
+
+
+https://readingfeynman.org/2014/09/22/plancks-constant-h/
+
+
+## APPENDIX - MORE REFERENCES
+
+GITHUB M
+https://docs.github.com/en/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax
+
+GNUPLOT
+
+http://gnuplot.sourceforge.net/docs_4.2/gnuplot.html
+
+INSERTING UTF-8 CHARS USING VI
+
+https://en.wikipedia.org/wiki/UTF-8
+https://en.wikipedia.org/wiki/Block_Elements
+https://www.compart.com/en/unicode/block
+https://www.compart.com/en/unicode/U+03C0
+
+Using vi, insert  ctrl-v u code
+
+For example: ^vu03c0 inserts π
+
+
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
 XXX examples
 [GitHub Pages](https://pages.github.com/)
-
-pi = u03c0
-http://www.reading.ac.uk/physicsnet/units/3/3pha4/Lectures/l1.pdf
 
 spellcheck
