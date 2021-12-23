@@ -191,55 +191,46 @@ Mine vs Planck.
   improving the result
 - I have no idea why the .777 fudge factor for the value of h is needed.
 
+Notes:
+- The 'Maxwell-Boltzmann kinetic energy distribution' is from here:
+[tec-science Maxwell–Boltzmann distribution](https://www.tec-science.com/thermodynamics/kinetic-theory-of-gases/maxwell-boltzmann-distribution/)
+- The Mode Density derivation is from here: 
+[reading.ac.uk Radiation in a Cavity (Rayleigh, Planck (1900))](http://www.reading.ac.uk/physicsnet/units/3/3pha4/Lectures/l1.pdf)
+
 ![plot-rj-planck-mine.png](/assets/plot_rj_planck_mine.png)
 
 ## APPENDIX References
 
-[Planck's law](https://en.wikipedia.org/wiki/Planck%27s_law)
-[xxx](https://en.wikipedia.org/wiki/Rayleigh%E2%80%93Jeans_law)
-[xxx](https://en.wikipedia.org/wiki/Equipartition_theorem)
-[xxx](https://en.wikipedia.org/wiki/Boltzmann_constant)
-[xxx](https://en.wikipedia.org/wiki/Maxwell%E2%80%93Boltzmann_distribution)
+[Wikipedia Planck's law](https://en.wikipedia.org/wiki/Planck%27s_law)
 
+[Wikipedia Rayleigh–Jeans law](https://en.wikipedia.org/wiki/Rayleigh%E2%80%93Jeans_law)
 
-xxxxxxxxxxxxxxxxxxxxxxxxxx
+[Wikipedia Equipartition theorem](https://en.wikipedia.org/wiki/Equipartition_theorem)
 
-https://www.tec-science.com/thermodynamics/kinetic-theory-of-gases/maxwell-boltzmann-distribution/
-  contains section "Maxwell-Boltzmann kinetic energy distribution"
-Radiation in a Cavity (Rayleigh, Planck (1900))
-- http://www.reading.ac.uk/physicsnet/units/3/3pha4/Lectures/l1.pdf
-    mode density derivation
+[Wikipedia Boltzmann constant](https://en.wikipedia.org/wiki/Boltzmann_constant)
 
+[Wikipedia Maxwell–Boltzmann distribution](https://en.wikipedia.org/wiki/Maxwell%E2%80%93Boltzmann_distribution)
 
+[tec-science Maxwell–Boltzmann distribution](https://www.tec-science.com/thermodynamics/kinetic-theory-of-gases/maxwell-boltzmann-distribution/)
 
+[reading.ac.uk Radiation in a Cavity (Rayleigh, Planck (1900))](http://www.reading.ac.uk/physicsnet/units/3/3pha4/Lectures/l1.pdf)
 
-https://readingfeynman.org/2014/09/22/plancks-constant-h/
-
+[Reading Feynman](https://readingfeynman.org/2014/09/22/plancks-constant-h/)
 
 ## APPENDIX - MORE REFERENCES
 
-GITHUB M
-https://docs.github.com/en/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax
+[Writing-On-Github](https://docs.github.com/en/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax)
 
-GNUPLOT
+[Gnuplot doc](http://gnuplot.sourceforge.net/docs_4.2/gnuplot.html)
 
-http://gnuplot.sourceforge.net/docs_4.2/gnuplot.html
-
-INSERTING UTF-8 CHARS USING VI
-
-https://en.wikipedia.org/wiki/UTF-8
-https://en.wikipedia.org/wiki/Block_Elements
-https://www.compart.com/en/unicode/block
-https://www.compart.com/en/unicode/U+03C0
+UTF-8 References
+- https://en.wikipedia.org/wiki/UTF-8
+- https://en.wikipedia.org/wiki/Block_Elements
+- https://www.compart.com/en/unicode/block
+- https://www.compart.com/en/unicode/U+03C0
 
 Using vi, insert  ctrl-v u code
+```
+  example: ^vu03c0 inserts π
 
-For example: ^vu03c0 inserts π
-
-
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-
-XXX examples
-[GitHub Pages](https://pages.github.com/)
-
-spellcheck
+```
