@@ -1,4 +1,3 @@
-// xxx
 // usage: ./bb [-rpmz] [temp_deg_k]
 //   -r: plot Rayleigh-Jeans 
 //   -p: plot Planck
