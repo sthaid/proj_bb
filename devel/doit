@@ -1,8 +1,0 @@
-#!/bin/bash
-
-gcc -Wall -Wno-unused-result -O2 -o bb bb.c -lm
-if [ $? -ne 0 ]; then
-  exit
-fi
-
-./bb

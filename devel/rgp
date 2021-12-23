@@ -1,8 +1,0 @@
-#!/bin/bash
-
-gnuplot -p \
-    -e "set term x11 size 1000,600" \
-    -e "set xrange [*:*]" \
-    -e "set yrange [*:*]" \
-    -e "plot 'plot.dat' using 1:2 with lines linewidth 2 linecolor rgb 'purple'" \
-

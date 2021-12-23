@@ -120,7 +120,7 @@ the visible light spectrum.
 Reference: https://en.wikipedia.org/wiki/Planck%27s_law
 ```
                        2 h c^2          1
-    SpectralRadiance = ------- *  -------------------
+    SpectralRadiance = ------- *  --------------------
                        wvlen^5           h c 
                                   e^ (----------)  - 1
                                       wvlen * KT
@@ -137,9 +137,9 @@ Reference: https://en.wikipedia.org/wiki/Rayleigh%E2%80%93Jeans_law
 
 The bb.c calc_rj() function:
 ```
-                             8 * π       c
-    MODE_DENSITY(wvlen) =  --------- * --------
-                           wvlen^4      4 * π
+                             8 * π        c
+    MODE_DENSITY(wvlen) =  --------- * -------
+                            wvlen^4     4 * π
 
     SpectralRadiance = MODE_DENSITY(wvlen) * KT
 
